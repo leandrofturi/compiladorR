@@ -1,0 +1,9 @@
+# Lexer para Linguagem R, baseado no ANTLR
+ANTLR: https://www.antlr.org/
+Gramática: https://github.com/antlr/grammars-v4/tree/master/r
+Gramática derivada de http://svn.r-project.org/R/trunk/src/main/gram.y e http://cran.r-project.org/doc/manuals/R-lang.html#Parser
+
+```
+$ make run FILE=arquivo_de_teste
+... prints parse tree ...
+```
