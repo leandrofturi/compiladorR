@@ -4,7 +4,7 @@
 R é uma linguagem de programação voltada a análise de dados estatísticos.
 Inicialmente foi realizada a análise da gramática da linguagem R contida no repositório [CRAN](http://cran.r-project.org/doc/manuals/R-lang.html#Parser) e na implementação do lexer em C do [svn.r-project](http://svn.r-project.org/R/trunk/src/main/gram.y). Diante ao fato de que todas as informações já estavam disponíveis e implementadas no ANTLR, foi realizado um reaproveitamento dos arquivos definindo a gramática.
 
-Como não existe almoço grátis, notou-se que estruturas aninhadas específicas e comentários entre estas estruturas, como as exemplificadas a seguir, não estavam implementadas. Nós as implementamos.
+Como não existe almoço grátis, notou-se que estruturas aninhadas específicas sem marcadores de bloco `{ ... }` e comentários entre estas estruturas, como as exemplificadas a seguir, não estavam implementadas. Nós as implementamos. Também implementamos operadores de atribuição globais `<<-`
 
 ```{R}
 if (x==0) {
