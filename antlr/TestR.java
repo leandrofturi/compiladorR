@@ -19,11 +19,11 @@ public class TestR {
 
 		// Print tokens AFTER filtering
 		for (Object tok : tokens.getTokens()) {
-			System.out.println(tok);
+//			System.out.println(tok);
 		}
 		RParser parser = new RParser(tokens);
 		parser.setBuildParseTree(true);
 		RuleContext tree = parser.prog();
-		System.out.println(tree.toStringTree(parser));
+//		System.out.println(tree.toStringTree(parser));
 	}
 }

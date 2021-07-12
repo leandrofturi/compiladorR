@@ -45,9 +45,7 @@ geraPopulacao = function (entrada, lags, parametrosIniciais, nP) {
     p = 1:nP
     populacao = lapply (p, function (x)
                            geraIndividuo (entrada, lags))
-  }
-  
-  # CASO CONTRARIO, SAO OBTIDAS AS AVALIACOES
+  } # CASO CONTRARIO, SAO OBTIDAS AS AVALIACOES
   else {
     p = 1:((length(parametrosIniciais)) / (12*(sum (lags))))
     populacao = parLapply (cl, p, function (x)

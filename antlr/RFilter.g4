@@ -53,7 +53,7 @@ elem:   op eat?
     |   'for' eat? '(' (elem|eat)* ')' eat?
     |   'while' eat? '(' (elem|eat)* ')' eat?
     |   'if' eat? '(' (elem|eat)* ')' eat?
-    |   (COMMENT)* eat? 'else' eat?
+    |   'else' eat?
         {
         // ``inside a compound expression, a newline before else is discarded,
         // whereas at the outermost level, the newline terminates the if
