@@ -1,0 +1,16 @@
+# Lexer para Linguagem R, baseado no ANTLR
+
+Gramática derivada de http://svn.r-project.org/R/trunk/src/main/gram.y e http://cran.r-project.org/doc/manuals/R-lang.html#Parser
+
+## Uso
+Download ANTLR: https://www.antlr.org/ exatamente como o especificado.
+
+```
+$ make run FILE=arquivo_de_teste
+... prints parse tree ...
+```
+
+```
+$ make runall
+... prints parse tree of all tests files ...
+```

@@ -19,7 +19,7 @@ a <- 1; b <- 2
 a <<- 2 # globalmente
 ```
 
-Destaca-se que um caso específico, contendo um comentário em uma nova linha entre condicionais, não é aceito pela gramática.
+Destaca-se que um caso específico e sintaticamente válido, contendo um comentário em uma nova linha entre condicionais, não é aceito pela gramática implementada.
 
 ```{R}
 if (x==1)
@@ -31,4 +31,4 @@ else
 
 ### Testes realizados
 
-Foram realizadas baterias de testes, que vão desde todas as combinações posicionais de condicionais `if ... else`, códigos voltados ao aprendizado da linguagem (*learnxinyminutes.com*), à programas reais implementados pelo grupo anteriormente. Ademais, erros léxicos como `"abc` e numerais `0x`; além de erros de sintaxe como parênteses que abrem mas não fecham; palavras-chave sendo usada numa posição inesperada; dois números um ao lado do outro sem nenhum operador entre eles; duas instruções sem um ponto-e-vírgula entre elas, também foram analisados. Conforme mencionado anteriormente, todos estes casos estão cobrtos pela gramática considerada, a não ser a exceção mencionada. Aos demais, não conseguimos encontrar outros casos que **não** foram cobertos pela nossa implementação.
+Foram realizadas baterias de testes, que vão desde todas as combinações posicionais de condicionais `if ... else`, códigos voltados ao aprendizado da linguagem (*learnxinyminutes.com*), à programas reais implementados pelo grupo em vidas passadas. Ademais, erros léxicos como `"abc` e numerais `0x`; além de erros de sintaxe como parênteses que abrem mas não fecham; palavras-chave sendo usada numa posição inesperada; dois números um ao lado do outro sem nenhum operador entre eles; duas instruções sem um ponto-e-vírgula entre elas, também foram analisados. Conforme mencionado anteriormente, todos estes casos estão cobrtos pela gramática considerada, a não ser a exceção mencionada. Aos demais, não conseguimos encontrar outros casos que **não** foram cobertos pela nossa implementação.
