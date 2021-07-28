@@ -44,6 +44,8 @@ $ java TestR sample.R
 */
 grammar R;
 
+@header { package parser; }
+
 prog:   ( expr (';' | NL) | NL)* EOF;
 
 expr:   expr '[[' sublist ']' ']'  // '[[' follows R's yacc grammar
