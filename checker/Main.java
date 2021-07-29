@@ -37,11 +37,11 @@ public class Main {
 		System.out.println(tree.toStringTree(parser));
 
 		// Checker
-//		SemanticChecker checker = new SemanticChecker();
-//		checker.visit(tree);
-//		if (checker.hasPassed()) {
-//			System.out.println("PARSE SUCCESSFUL!");
-//			checker.printTables();
-//		}
+		SemanticChecker checker = new SemanticChecker();
+		checker.visit(tree);
+		if (checker.hasPassed()) {
+			System.out.println("PARSE SUCCESSFUL!");
+			checker.printTables();
+		}
 	}
 }

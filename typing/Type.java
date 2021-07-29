@@ -1,6 +1,5 @@
 package typing;
 
-// Enumeração dos tipos primitivos que podem existir em EZLang.
 public enum Type {
 	INT_TYPE {
 		public String toString() {

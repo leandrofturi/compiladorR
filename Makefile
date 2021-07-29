@@ -1,7 +1,7 @@
 JAVA=java
 JAVAC=javac
 
-ROOT=/mnt/c/Users/leand/OneDrive/Documentos/Ufes/compiladores/compiladorR
+ROOT=.
 
 ANTLR_PATH=$(ROOT)/tools/antlr-4.9.2-complete.jar
 CLASS_PATH_OPTION=-cp .:$(ANTLR_PATH)
@@ -39,7 +39,7 @@ run:
 	$(JAVA) $(CLASS_PATH_OPTION):$(BIN_PATH) $(MAIN_PATH)/Main $(FILE)
 
 runall:
-	-for FILE in $(IN)/*.ezl; do \
+	-for FILE in $(IN)/*.R; do \
 	 	echo -e "\nRunning $${FILE}" && \
 	 	$(JAVA) $(CLASS_PATH_OPTION):$(BIN_PATH) $(MAIN_PATH)/Main $${FILE}; \
 	done;
