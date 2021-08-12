@@ -218,35 +218,490 @@ public class RParser extends Parser {
 	}
 
 	public static class ExprContext extends ParserRuleContext {
+		public ExprContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_expr; }
+	 
+		public ExprContext() { }
+		public void copyFrom(ExprContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class ExprNotFormulaContext extends ExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public ExprNotFormulaContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprNotFormula(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprINTContext extends ExprContext {
+		public TerminalNode INT() { return getToken(RParser.INT, 0); }
+		public ExprINTContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprINT(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprNAContext extends ExprContext {
+		public ExprNAContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprNA(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprValuePkgContext extends ExprContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public FormlistContext formlist() {
-			return getRuleContext(FormlistContext.class,0);
+		public ExprValuePkgContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprValuePkg(this);
+			else return visitor.visitChildren(this);
 		}
-		public ExprlistContext exprlist() {
-			return getRuleContext(ExprlistContext.class,0);
+	}
+	public static class ExprPexprPContext extends ExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
-		public TerminalNode ID() { return getToken(RParser.ID, 0); }
-		public TerminalNode STRING() { return getToken(RParser.STRING, 0); }
-		public TerminalNode HEX() { return getToken(RParser.HEX, 0); }
-		public TerminalNode INT() { return getToken(RParser.INT, 0); }
-		public TerminalNode FLOAT() { return getToken(RParser.FLOAT, 0); }
-		public TerminalNode COMPLEX() { return getToken(RParser.COMPLEX, 0); }
+		public ExprPexprPContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprPexprP(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprbreakContext extends ExprContext {
+		public ExprbreakContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprbreak(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprWrappedinContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
 		public TerminalNode USER_OP() { return getToken(RParser.USER_OP, 0); }
+		public ExprWrappedinContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprWrappedin(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprSubsublistContext extends ExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
 		public SublistContext sublist() {
 			return getRuleContext(SublistContext.class,0);
 		}
-		public ExprContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_expr; }
+		public ExprSubsublistContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExpr(this);
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprSubsublist(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprExtractContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprExtractContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprExtract(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprCompoundContext extends ExprContext {
+		public ExprlistContext exprlist() {
+			return getRuleContext(ExprlistContext.class,0);
+		}
+		public ExprCompoundContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprCompound(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprSTRINGContext extends ExprContext {
+		public TerminalNode STRING() { return getToken(RParser.STRING, 0); }
+		public ExprSTRINGContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprSTRING(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprAssignContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprAssignContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprAssign(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprTRUEContext extends ExprContext {
+		public ExprTRUEContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprTRUE(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprforContext extends ExprContext {
+		public TerminalNode ID() { return getToken(RParser.ID, 0); }
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprforContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprfor(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprwhileContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprwhileContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprwhile(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprOrContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprOrContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprOr(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprInfContext extends ExprContext {
+		public ExprInfContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprInf(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprAndContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprAndContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprAnd(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprifelseContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprifelseContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprifelse(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprHEXContext extends ExprContext {
+		public TerminalNode HEX() { return getToken(RParser.HEX, 0); }
+		public ExprHEXContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprHEX(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprSignContext extends ExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public ExprSignContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprSign(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprHelpContext extends ExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public ExprHelpContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprHelp(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprAssocRightContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprAssocRightContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprAssocRight(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprNotContext extends ExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public ExprNotContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprNot(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprFALSEContext extends ExprContext {
+		public ExprFALSEContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprFALSE(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprSublistContext extends ExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public SublistContext sublist() {
+			return getRuleContext(SublistContext.class,0);
+		}
+		public ExprSublistContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprSublist(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprNamespaceContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprNamespaceContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprNamespace(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprEqualityContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprEqualityContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprEquality(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprFLOATContext extends ExprContext {
+		public TerminalNode FLOAT() { return getToken(RParser.FLOAT, 0); }
+		public ExprFLOATContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprFLOAT(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprCOMPLEXContext extends ExprContext {
+		public TerminalNode COMPLEX() { return getToken(RParser.COMPLEX, 0); }
+		public ExprCOMPLEXContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprCOMPLEX(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprSumContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprSumContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprSum(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprDefineContext extends ExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public FormlistContext formlist() {
+			return getRuleContext(FormlistContext.class,0);
+		}
+		public ExprDefineContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprDefine(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprNULLContext extends ExprContext {
+		public ExprNULLContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprNULL(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprTimesContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprTimesContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprTimes(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprrepeatContext extends ExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public ExprrepeatContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprrepeat(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprnextContext extends ExprContext {
+		public ExprnextContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprnext(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprCallContext extends ExprContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public SublistContext sublist() {
+			return getRuleContext(SublistContext.class,0);
+		}
+		public ExprCallContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprCall(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprIDContext extends ExprContext {
+		public TerminalNode ID() { return getToken(RParser.ID, 0); }
+		public ExprIDContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprID(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprifContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprifContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprif(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprNaNContext extends ExprContext {
+		public ExprNaNContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprNaN(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class ExprEFormulaEContext extends ExprContext {
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
+		}
+		public ExprEFormulaEContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitExprEFormulaE(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -272,6 +727,10 @@ public class RParser extends Parser {
 			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 			case 1:
 				{
+				_localctx = new ExprSignContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+
 				setState(26);
 				_la = _input.LA(1);
 				if ( !(_la==T__9 || _la==T__10) ) {
@@ -288,6 +747,9 @@ public class RParser extends Parser {
 				break;
 			case 2:
 				{
+				_localctx = new ExprNotContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(28);
 				match(T__20);
 				setState(29);
@@ -296,6 +758,9 @@ public class RParser extends Parser {
 				break;
 			case 3:
 				{
+				_localctx = new ExprNotFormulaContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(30);
 				match(T__25);
 				setState(31);
@@ -304,6 +769,9 @@ public class RParser extends Parser {
 				break;
 			case 4:
 				{
+				_localctx = new ExprDefineContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(32);
 				match(T__32);
 				setState(33);
@@ -326,6 +794,9 @@ public class RParser extends Parser {
 				break;
 			case 5:
 				{
+				_localctx = new ExprCompoundContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(39);
 				match(T__35);
 				setState(40);
@@ -336,6 +807,9 @@ public class RParser extends Parser {
 				break;
 			case 6:
 				{
+				_localctx = new ExprifContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(43);
 				match(T__37);
 				setState(44);
@@ -350,6 +824,9 @@ public class RParser extends Parser {
 				break;
 			case 7:
 				{
+				_localctx = new ExprifelseContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(49);
 				match(T__37);
 				setState(50);
@@ -368,6 +845,9 @@ public class RParser extends Parser {
 				break;
 			case 8:
 				{
+				_localctx = new ExprforContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(57);
 				match(T__39);
 				setState(58);
@@ -386,6 +866,9 @@ public class RParser extends Parser {
 				break;
 			case 9:
 				{
+				_localctx = new ExprwhileContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(65);
 				match(T__41);
 				setState(66);
@@ -400,6 +883,9 @@ public class RParser extends Parser {
 				break;
 			case 10:
 				{
+				_localctx = new ExprrepeatContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(71);
 				match(T__42);
 				setState(72);
@@ -408,6 +894,9 @@ public class RParser extends Parser {
 				break;
 			case 11:
 				{
+				_localctx = new ExprHelpContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(73);
 				match(T__43);
 				setState(74);
@@ -416,18 +905,27 @@ public class RParser extends Parser {
 				break;
 			case 12:
 				{
+				_localctx = new ExprnextContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(75);
 				match(T__44);
 				}
 				break;
 			case 13:
 				{
+				_localctx = new ExprbreakContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(76);
 				match(T__45);
 				}
 				break;
 			case 14:
 				{
+				_localctx = new ExprPexprPContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(77);
 				match(T__33);
 				setState(78);
@@ -438,72 +936,108 @@ public class RParser extends Parser {
 				break;
 			case 15:
 				{
+				_localctx = new ExprIDContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(81);
 				match(ID);
 				}
 				break;
 			case 16:
 				{
+				_localctx = new ExprSTRINGContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(82);
 				match(STRING);
 				}
 				break;
 			case 17:
 				{
+				_localctx = new ExprHEXContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(83);
 				match(HEX);
 				}
 				break;
 			case 18:
 				{
+				_localctx = new ExprINTContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(84);
 				match(INT);
 				}
 				break;
 			case 19:
 				{
+				_localctx = new ExprFLOATContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(85);
 				match(FLOAT);
 				}
 				break;
 			case 20:
 				{
+				_localctx = new ExprCOMPLEXContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(86);
 				match(COMPLEX);
 				}
 				break;
 			case 21:
 				{
+				_localctx = new ExprNULLContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(87);
 				match(T__46);
 				}
 				break;
 			case 22:
 				{
+				_localctx = new ExprNAContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(88);
 				match(T__47);
 				}
 				break;
 			case 23:
 				{
+				_localctx = new ExprInfContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(89);
 				match(T__48);
 				}
 				break;
 			case 24:
 				{
+				_localctx = new ExprNaNContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(90);
 				match(T__49);
 				}
 				break;
 			case 25:
 				{
+				_localctx = new ExprTRUEContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(91);
 				match(T__50);
 				}
 				break;
 			case 26:
 				{
+				_localctx = new ExprFALSEContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
 				setState(92);
 				match(T__51);
 				}
@@ -523,7 +1057,7 @@ public class RParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 					case 1:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprValuePkgContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(95);
 						if (!(precpred(_ctx, 39))) throw new FailedPredicateException(this, "precpred(_ctx, 39)");
@@ -543,7 +1077,7 @@ public class RParser extends Parser {
 						break;
 					case 2:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprExtractContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(98);
 						if (!(precpred(_ctx, 38))) throw new FailedPredicateException(this, "precpred(_ctx, 38)");
@@ -563,7 +1097,7 @@ public class RParser extends Parser {
 						break;
 					case 3:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprAssocRightContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(101);
 						if (!(precpred(_ctx, 37))) throw new FailedPredicateException(this, "precpred(_ctx, 37)");
@@ -575,7 +1109,7 @@ public class RParser extends Parser {
 						break;
 					case 4:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprNamespaceContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(104);
 						if (!(precpred(_ctx, 35))) throw new FailedPredicateException(this, "precpred(_ctx, 35)");
@@ -587,7 +1121,7 @@ public class RParser extends Parser {
 						break;
 					case 5:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprWrappedinContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(107);
 						if (!(precpred(_ctx, 34))) throw new FailedPredicateException(this, "precpred(_ctx, 34)");
@@ -599,7 +1133,7 @@ public class RParser extends Parser {
 						break;
 					case 6:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprTimesContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(110);
 						if (!(precpred(_ctx, 33))) throw new FailedPredicateException(this, "precpred(_ctx, 33)");
@@ -619,7 +1153,7 @@ public class RParser extends Parser {
 						break;
 					case 7:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprSumContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(113);
 						if (!(precpred(_ctx, 32))) throw new FailedPredicateException(this, "precpred(_ctx, 32)");
@@ -639,7 +1173,7 @@ public class RParser extends Parser {
 						break;
 					case 8:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprEqualityContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(116);
 						if (!(precpred(_ctx, 31))) throw new FailedPredicateException(this, "precpred(_ctx, 31)");
@@ -659,7 +1193,7 @@ public class RParser extends Parser {
 						break;
 					case 9:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprAndContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(119);
 						if (!(precpred(_ctx, 29))) throw new FailedPredicateException(this, "precpred(_ctx, 29)");
@@ -679,7 +1213,7 @@ public class RParser extends Parser {
 						break;
 					case 10:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprOrContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(122);
 						if (!(precpred(_ctx, 28))) throw new FailedPredicateException(this, "precpred(_ctx, 28)");
@@ -699,7 +1233,7 @@ public class RParser extends Parser {
 						break;
 					case 11:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprEFormulaEContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(125);
 						if (!(precpred(_ctx, 26))) throw new FailedPredicateException(this, "precpred(_ctx, 26)");
@@ -711,7 +1245,7 @@ public class RParser extends Parser {
 						break;
 					case 12:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprAssignContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(128);
 						if (!(precpred(_ctx, 25))) throw new FailedPredicateException(this, "precpred(_ctx, 25)");
@@ -731,7 +1265,7 @@ public class RParser extends Parser {
 						break;
 					case 13:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprSubsublistContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(131);
 						if (!(precpred(_ctx, 41))) throw new FailedPredicateException(this, "precpred(_ctx, 41)");
@@ -747,7 +1281,7 @@ public class RParser extends Parser {
 						break;
 					case 14:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprSublistContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(137);
 						if (!(precpred(_ctx, 40))) throw new FailedPredicateException(this, "precpred(_ctx, 40)");
@@ -761,7 +1295,7 @@ public class RParser extends Parser {
 						break;
 					case 15:
 						{
-						_localctx = new ExprContext(_parentctx, _parentState);
+						_localctx = new ExprCallContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(142);
 						if (!(precpred(_ctx, 23))) throw new FailedPredicateException(this, "precpred(_ctx, 23)");

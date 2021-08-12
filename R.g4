@@ -48,47 +48,48 @@ grammar R;
 
 prog:   ( expr (';' | NL) | NL)* EOF;
 
-expr:   expr '[[' sublist ']' ']'  // '[[' follows R's yacc grammar
-    |   expr '[' sublist ']'
-    |   expr ('::'|':::') expr
-    |   expr ('$'|'@') expr
-    |   <assoc=right> expr '^' expr
-    |   ('-'|'+') expr
-    |   expr ':' expr
-    |   expr USER_OP expr // anything wrappedin %: '%' .* '%'
-    |   expr ('*'|'/') expr
-    |   expr ('+'|'-') expr
-    |   expr ('>'|'>='|'<'|'<='|'=='|'!=') expr
-    |   '!' expr
-    |   expr ('&'|'&&') expr
-    |   expr ('|'|'||') expr
-    |   '~' expr
-    |   expr '~' expr
-    |   expr ('<-'|'<<-'|'='|'->'|'->>'|':=') expr
-    |   'function' '(' formlist? ')' expr // define function
-    |   expr '(' sublist ')'              // call function
-    |   '{' exprlist '}' // compound statement
-    |   'if' '(' expr ')' expr
-    |   'if' '(' expr ')' expr 'else' expr
-    |   'for' '(' ID 'in' expr ')' expr
-    |   'while' '(' expr ')' expr
-    |   'repeat' expr
-    |   '?' expr // get help on expr, usually string or ID
-    |   'next'
-    |   'break'
-    |   '(' expr ')'
-    |   ID
-    |   STRING
-    |   HEX
-    |   INT
-    |   FLOAT
-    |   COMPLEX
-    |   'NULL'
-    |   'NA'
-    |   'Inf'
-    |   'NaN'
-    |   'TRUE'
-    |   'FALSE'
+expr:   
+        expr '[[' sublist ']' ']'                                   # exprSubsublist // '[[' follows R's yacc grammar
+    |   expr '[' sublist ']'                                        # exprSublist
+    |   expr ('::'|':::') expr                                      # exprValuePkg
+    |   expr ('$'|'@') expr                                         # exprExtract
+    |   <assoc=right> expr '^' expr                                 # exprAssocRight
+    |   ('-'|'+') expr                                              # exprSign
+    |   expr ':' expr                                               # exprNamespace
+    |   expr USER_OP expr                                           # exprWrappedin // anything wrappedin %: '%' .* '%'
+    |   expr ('*'|'/') expr                                         # exprTimes
+    |   expr ('+'|'-') expr                                         # exprSum
+    |   expr ('>'|'>='|'<'|'<='|'=='|'!=') expr                     # exprEquality
+    |   '!' expr                                                    # exprNot
+    |   expr ('&'|'&&') expr                                        # exprAnd
+    |   expr ('|'|'||') expr                                        # exprOr
+    |   '~' expr                                                    # exprNotFormula
+    |   expr '~' expr                                               # exprEFormulaE
+    |   expr ('<-'|'<<-'|'='|'->'|'->>'|':=') expr                  # exprAssign
+    |   'function' '(' formlist? ')' expr                           # exprDefine // define function
+    |   expr '(' sublist ')'                                        # exprCall // call function
+    |   '{' exprlist '}'                                            # exprCompound // compound statement
+    |   'if' '(' expr ')' expr                                      # exprif
+    |   'if' '(' expr ')' expr 'else' expr                          # exprifelse
+    |   'for' '(' ID 'in' expr ')' expr                             # exprfor
+    |   'while' '(' expr ')' expr                                   # exprwhile
+    |   'repeat' expr                                               # exprrepeat
+    |   '?' expr                                                    # exprHelp // get help on expr, usually string or ID
+    |   'next'                                                      # exprnext
+    |   'break'                                                     # exprbreak
+    |   '(' expr ')'                                                # exprPexprP
+    |   ID                                                          # exprID
+    |   STRING                                                      # exprSTRING
+    |   HEX                                                         # exprHEX
+    |   INT                                                         # exprINT
+    |   FLOAT                                                       # exprFLOAT
+    |   COMPLEX                                                     # exprCOMPLEX
+    |   'NULL'                                                      # exprNULL
+    |   'NA'                                                        # exprNA
+    |   'Inf'                                                       # exprInf
+    |   'NaN'                                                       # exprNaN
+    |   'TRUE'                                                      # exprTRUE
+    |   'FALSE'                                                     # exprFALSE
     ;
 
 exprlist

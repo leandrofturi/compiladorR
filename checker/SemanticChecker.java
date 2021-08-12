@@ -3,11 +3,12 @@ package checker;
 import org.antlr.v4.runtime.Token;
 
 import parser.RParser;
-import parser.RParser.Assign_stmtContext;
-import parser.RParser.ExprIdContext;
-import parser.RParser.ExprStrValContext;
-import parser.RParser.Read_stmtContext;
-import parser.RParserBaseVisitor;
+import parser.RParser.ExprContext;
+//import parser.RParser.Assign_stmtContext;
+//import parser.RParser.ExprIdContext;
+//import parser.RParser.ExprStrValContext;
+//import parser.RParser.Read_stmtContext;
+import parser.RBaseVisitor;
 import tables.StrTable;
 import tables.VarTable;
 import typing.Type;
@@ -37,12 +38,10 @@ import typing.Type;
  * muito comum de erros. Veja o método visitAssign_stmt abaixo para
  * ter um exemplo.
  */
-public class SemanticChecker extends EZParserBaseVisitor<Void> {
+public class SemanticChecker extends RBaseVisitor<Void> {
 
 	private StrTable st = new StrTable();   // Tabela de strings.
     private VarTable vt = new VarTable();   // Tabela de variáveis.
-    
-    Type lastDeclType;  // Variável "global" com o último tipo declarado.
     
     private boolean passed = true;
 
@@ -72,7 +71,7 @@ public class SemanticChecker extends EZParserBaseVisitor<Void> {
         	passed = false;
             return;
         }
-        vt.addVar(text, line, lastDeclType);
+        vt.addVar(text, line);
     }
     
     // Retorna true se os testes passaram.
@@ -88,82 +87,22 @@ public class SemanticChecker extends EZParserBaseVisitor<Void> {
     	System.out.print(vt);
     	System.out.print("\n\n");
     }
-    /*
-    // Visita a regra type_spec: BOOL
-    // Note que esse método só foi criado pelo ANTLR porque a regra da
-    // linha 29 de EZParser.g foi marcada com o identificador # boolType.
-    // O mesmo vale para as demais regras de type_spec.
-    @Override
-    public Void visitBoolType(EZParser.BoolTypeContext ctx) {
-    	this.lastDeclType = Type.BOOL_TYPE;
-    	return null; // Java says must return something even when Void
-    }
-	
-    // Visita a regra type_spec: INT
-	@Override
-	public Void visitIntType(EZParser.IntTypeContext ctx) {
-		this.lastDeclType = Type.INT_TYPE;
-		return null; // Java says must return something even when Void
-	}
-	
-	// Visita a regra type_spec: REAL
-	@Override
-	public Void visitRealType(EZParser.RealTypeContext ctx) {
-		this.lastDeclType = Type.REAL_TYPE;
-		return null; // Java says must return something even when Void
-    }
-	
-	// Visita a regra type_spec: STRING
-	@Override
-	public Void visitStrType(EZParser.StrTypeContext ctx) {
-		this.lastDeclType = Type.STR_TYPE;
-		return null; // Java says must return something even when Void
-	}
-    
-    // Visita a regra var_decl: type_spec ID SEMI
-    @Override
-    public Void visitVar_decl(EZParser.Var_declContext ctx) {
-    	// Visita a declaração de tipo para definir a variável lastDeclType.
-    	visit(ctx.type_spec());
-    	// Agora testa se a variável foi redeclarada.
-    	newVar(ctx.ID().getSymbol());
-    	return null; // Java says must return something even when Void
-    }
 
-    // Visita a regra assign_stmt: ID ASSIGN expr SEMI
-	@Override
-	public Void visitAssign_stmt(Assign_stmtContext ctx) {
-		// Visita recursivamente a expressão da direita para procurar erros. 
-		visit(ctx.expr());
-		// Verifica se a variável a ser atribuída foi declarada.
-		checkVar(ctx.ID().getSymbol());
-		return null; // Java says must return something even when Void
-	}
-
-	// Visita a regra read_stmt: READ ID SEMI
-	@Override
-	public Void visitRead_stmt(Read_stmtContext ctx) {
-		// Verifica se a variável que vai receber o valor lido foi declarada.
-		checkVar(ctx.ID().getSymbol());
-		return null; // Java says must return something even when Void
-	}
 
 	@Override
-	// Visita a regra expr: STR_VAL
-	// Valem os mesmos comentários do método visitBoolType.
-	public Void visitExprStrVal(ExprStrValContext ctx) {
+	// Visita a regra expr: STRING
+	public Void visitExprSTRING(RParser.ExprSTRINGContext ctx) {
 		// Adiciona a string na tabela de strings.
-		st.add(ctx.STR_VAL().getText());
+		st.add(ctx.STRING().getText());
 		return null; // Java says must return something even when Void
 	}
 
 	@Override
 	// Visita a regra expr: ID
-	// Valem os mesmos comentários do método visitBoolType.
-	public Void visitExprId(ExprIdContext ctx) {
-		// Verifica se a variável usada na expressão foi declarada.
-		checkVar(ctx.ID().getSymbol());
-		return null; // Java says must return something even when Void
+	public Void visitExprID(RParser.ExprIDContext ctx) {
+    	// Testa se a variável foi redeclarada.
+    	newVar(ctx.ID().getSymbol());
+    	return null; // Java says must return something even when Void
 	}
-	*/
+
 }
