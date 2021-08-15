@@ -5,7 +5,6 @@ import java.util.Formatter;
 
 @SuppressWarnings("serial")
 public final class StrTable extends ArrayList<String>{
-    // No mundo real isto certamente deveria ser um hash...
 
     @Override
     public boolean add(String s) {

@@ -37,9 +37,9 @@ public class Main {
 		tokens.seek(0);
 
 		// Print tokens AFTER filtering
-		for (Object tok : tokens.getTokens()) {
-			System.out.println(tok);
-		}
+//		for (Object tok : tokens.getTokens()) {
+//			System.out.println(tok);
+//		}
 
 		// Cria um parser que consome os tokens do buffer.
 		RParser parser = new RParser(tokens);

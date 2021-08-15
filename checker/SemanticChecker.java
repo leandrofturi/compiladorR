@@ -45,6 +45,9 @@ public class SemanticChecker extends RBaseVisitor<Void> {
     
     private boolean passed = true;
 
+	private boolean assigned = false;		// Indica que um assign está ocorrendo.
+	private Token currentID;				// Atual variável declarada.
+
     // Testa se o dado token foi declarado antes.
     void checkVar(Token token) {
     	String text = token.getText();
@@ -58,27 +61,25 @@ public class SemanticChecker extends RBaseVisitor<Void> {
             return;
         }
     }
-    
+
     // Cria uma nova variável a partir do dado token.
-    void newVar(Token token) {
+    void newVar(Token token, Type type) {
     	String text = token.getText();
     	int line = token.getLine();
    		int idx = vt.lookupVar(text);
         if (idx != -1) {
-        	System.err.printf(
-    			"SEMANTIC ERROR (%d): variable '%s' already declared at line %d.\n",
-                line, text, vt.getLine(idx));
-        	passed = false;
+			// Caso já exista, atualiza o tipo
+			vt.updateTypeVar(idx, type);
             return;
         }
-        vt.addVar(text, line);
+        vt.addVar(text, line, type);
     }
-    
+
     // Retorna true se os testes passaram.
     boolean hasPassed() {
     	return passed;
     }
-    
+
     // Exibe o conteúdo das tabelas em stdout.
     void printTables() {
         System.out.print("\n\n");
@@ -89,20 +90,209 @@ public class SemanticChecker extends RBaseVisitor<Void> {
     }
 
 
+	@Override public Void visitProg(RParser.ProgContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprNotFormula(RParser.ExprNotFormulaContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprINT(RParser.ExprINTContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.INTEGER_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprNA(RParser.ExprNAContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.LOGICAL_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprValuePkg(RParser.ExprValuePkgContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprPexprP(RParser.ExprPexprPContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprbreak(RParser.ExprbreakContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprWrappedin(RParser.ExprWrappedinContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprSubsublist(RParser.ExprSubsublistContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprExtract(RParser.ExprExtractContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprCompound(RParser.ExprCompoundContext ctx) { return visitChildren(ctx); }
+
 	@Override
-	// Visita a regra expr: STRING
 	public Void visitExprSTRING(RParser.ExprSTRINGContext ctx) {
 		// Adiciona a string na tabela de strings.
 		st.add(ctx.STRING().getText());
-		return null; // Java says must return something even when Void
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.CHARACTER_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
 	}
 
 	@Override
-	// Visita a regra expr: ID
+	public Void visitExprAssign(RParser.ExprAssignContext ctx) {
+		// Sinaliza que um assign ocorreu.
+		assigned = true;
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprTRUE(RParser.ExprTRUEContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.LOGICAL_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprfor(RParser.ExprforContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprwhile(RParser.ExprwhileContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprOr(RParser.ExprOrContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprInf(RParser.ExprInfContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.DOUBLE_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprAnd(RParser.ExprAndContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprifelse(RParser.ExprifelseContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprHEX(RParser.ExprHEXContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.DOUBLE_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprSign(RParser.ExprSignContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprHelp(RParser.ExprHelpContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprAssocRight(RParser.ExprAssocRightContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprNot(RParser.ExprNotContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprFALSE(RParser.ExprFALSEContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.LOGICAL_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprSublist(RParser.ExprSublistContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.LIST_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprNamespace(RParser.ExprNamespaceContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprEquality(RParser.ExprEqualityContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprFLOAT(RParser.ExprFLOATContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.DOUBLE_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprCOMPLEX(RParser.ExprCOMPLEXContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.COMPLEX_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprSum(RParser.ExprSumContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprDefine(RParser.ExprDefineContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprNULL(RParser.ExprNULLContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.NULL_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprTimes(RParser.ExprTimesContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprrepeat(RParser.ExprrepeatContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprnext(RParser.ExprnextContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprCall(RParser.ExprCallContext ctx) { return visitChildren(ctx); }
+
+	@Override
 	public Void visitExprID(RParser.ExprIDContext ctx) {
-    	// Testa se a variável foi redeclarada.
-    	newVar(ctx.ID().getSymbol());
-    	return null; // Java says must return something even when Void
+    	// Salva o ID corrente
+		currentID = ctx.ID().getSymbol();
+    	return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprif(RParser.ExprifContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprNaN(RParser.ExprNaNContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.DOUBLE_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitExprEFormulaE(RParser.ExprEFormulaEContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitExprlist(RParser.ExprlistContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitFormlist(RParser.FormlistContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitForm(RParser.FormContext ctx) { return visitChildren(ctx); }
+
+	@Override public Void visitSublist(RParser.SublistContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.LIST_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
+	}
+
+	@Override public Void visitSub(RParser.SubContext ctx) {
+		if(assigned) {
+			// Adiciona o ID corrente à tabela de variáveis.
+    		newVar(currentID, Type.LIST_TYPE);
+			assigned = false;
+		}
+		return visitChildren(ctx);
 	}
 
 }
