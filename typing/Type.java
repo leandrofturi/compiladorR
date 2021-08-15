@@ -78,10 +78,10 @@ public enum Type {
 
 	//"S4"	an S4 object which is not a simple object
 
-	// Tipo em aberto, ainda a ser descoberto.
-	OPEN_TYPE {
+	// Identificadores de variáveis.
+	ID_TYPE {
 		public String toString() {
-            return "?";
+            return "id";
         }
 	},
 

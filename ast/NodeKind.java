@@ -1,90 +1,10 @@
 package ast;
 
 // Enumeração dos tipos de nós de uma AST.
-// Adaptado da versão original em C.
-// Algumas pessoas podem preferir criar uma hierarquia de herança para os
-// nós para deixar o código "mais OO". Particularmente eu não sou muito
-// fã, acho que só complica mais as coisas. Imagine uma classe abstrata AST
-// com mais de 20 classes herdando dela, uma classe para cada tipo de nó...
 public enum NodeKind {
-	ASSIGN_NODE {
+    PROG_NODE {
 		public String toString() {
-            return ":=";
-        }
-	},
-    EQ_NODE {
-		public String toString() {
-            return "=";
-        }
-	},
-    BLOCK_NODE {
-		public String toString() {
-            return "block";
-        }
-	},
-    BOOL_VAL_NODE {
-		public String toString() {
-            return "";
-        }
-	},
-    IF_NODE {
-		public String toString() {
-            return "if";
-        }
-	},
-    INT_VAL_NODE {
-		public String toString() {
-            return "";
-        }
-	},
-    LT_NODE {
-		public String toString() {
-            return "<";
-        }
-	},
-    MINUS_NODE {
-		public String toString() {
-            return "-";
-        }
-	},
-    OVER_NODE {
-		public String toString() {
-            return "/";
-        }
-	},
-    PLUS_NODE {
-		public String toString() {
-            return "+";
-        }
-	},
-    PROGRAM_NODE {
-		public String toString() {
-            return "program";
-        }
-	},
-    READ_NODE {
-		public String toString() {
-            return "read";
-        }
-	},
-    REAL_VAL_NODE {
-		public String toString() {
-            return "";
-        }
-	},
-    REPEAT_NODE {
-		public String toString() {
-            return "repeat";
-        }
-	},
-    STR_VAL_NODE {
-		public String toString() {
-            return "";
-        }
-	},
-    TIMES_NODE {
-		public String toString() {
-            return "*";
+            return "prog";
         }
 	},
     VAR_DECL_NODE {
@@ -92,61 +12,202 @@ public enum NodeKind {
             return "var_decl";
         }
 	},
-    VAR_LIST_NODE {
-		public String toString() {
-            return "var_list";
-        }
-	},
     VAR_USE_NODE {
 		public String toString() {
             return "var_use";
         }
 	},
-    WRITE_NODE {
+	EXPRSUBSUBLIST_NODE {
 		public String toString() {
-            return "write";
+            return "[[";
         }
 	},
-
-    B2I_NODE { // Type conversion.
+	EXPRSUBLIST_NODE {
 		public String toString() {
-            return "B2I";
+            return "[";
         }
 	},
-    B2R_NODE {
+	VALUEPKG_NODE {
 		public String toString() {
-            return "B2R";
+            return "::|:::";
         }
 	},
-    B2S_NODE {
+	EXTRACT_NODE {
 		public String toString() {
-            return "B2S";
+            return "$|@";
         }
 	},
-    I2R_NODE {
+	SIGN_NODE {
 		public String toString() {
-            return "I2R";
+            return "sign";
         }
 	},
-    I2S_NODE {
+	NAMESPACE_NODE {
 		public String toString() {
-            return "I2S";
+            return ":";
         }
 	},
-    R2S_NODE {
+	TIMES_NODE {
 		public String toString() {
-            return "R2S";
+            return "*|/";
+        }
+	},
+	SUM_NODE {
+		public String toString() {
+            return "+|-";
+        }
+	},
+	EQUALITY_NODE {
+		public String toString() {
+            return ">|>=|<|<=|==|!=";
+        }
+	},
+	NOT_NODE {
+		public String toString() {
+            return "!";
+        }
+	},
+    AND_NODE {
+		public String toString() {
+            return "&|&&";
+        }
+	},
+	OR_NODE {
+		public String toString() {
+            return "||||";
+        }
+	},
+	NOTFORMULA_NODE {
+		public String toString() {
+            return "~";
+        }
+	},
+	FORMULA_NODE {
+		public String toString() {
+            return "~";
+        }
+	},
+	ASSIGN_NODE {
+		public String toString() {
+            return "<-|<<-|=|->|->>|:=";
+        }
+	},
+	DEFINE_NODE {
+		public String toString() {
+            return "define";
+        }
+	},
+    CALL_NODE {
+		public String toString() {
+            return "call";
+        }
+	},
+	COMPOUND_NODE {
+		public String toString() {
+            return "{";
+        }
+	},
+	IF_NODE {
+		public String toString() {
+            return "if";
+        }
+	},
+	IFELSE_NODE {
+		public String toString() {
+            return "if_else";
+        }
+	},
+	FOR_NODE {
+		public String toString() {
+            return "for";
+        }
+	},
+	WHILE_NODE {
+		public String toString() {
+            return "while";
+        }
+	},
+	REPEAT_NODE {
+		public String toString() {
+            return "repeat";
+        }
+	},
+	HELP_NODE {
+		public String toString() {
+            return "?";
+        }
+	},
+	NEXT_NODE {
+		public String toString() {
+            return "next";
+        }
+	},
+	BREAK_NODE {
+		public String toString() {
+            return "break";
+        }
+	},
+	PAR_NODE {
+		public String toString() {
+            return "(";
+        }
+	},
+	ID_NODE {
+		public String toString() {
+            return "id";
+        }
+	},
+	NULL_VAL_NODE {
+		public String toString() {
+            return "NULL";
+        }
+	},
+	LOGICAL_VAL_NODE {
+		public String toString() {
+            return "logical";
+        }
+	},
+	INTEGER_VAL_NODE {
+		public String toString() {
+            return "integer";
+        }
+	},
+	DOUBLE_VAL_NODE {
+		public String toString() {
+            return "double";
+        }
+	},
+	COMPLEX_VAL_NODE {
+		public String toString() {
+            return "complex";
+        }
+	},
+	CHARACTER_VAL_NODE {
+		public String toString() {
+            return "character";
+        }
+	},
+	LIST_VAL_NODE {
+		public String toString() {
+            return "list";
+        }
+	},
+	SUBLIST_NODE {
+		public String toString() {
+            return "sublist";
         }
 	};
 	
 	public static boolean hasData(NodeKind kind) {
 		switch(kind) {
-	        case BOOL_VAL_NODE:
-	        case INT_VAL_NODE:
-	        case REAL_VAL_NODE:
-	        case STR_VAL_NODE:
 	        case VAR_DECL_NODE:
 	        case VAR_USE_NODE:
+			case NULL_VAL_NODE:
+			case LOGICAL_VAL_NODE:
+			case INTEGER_VAL_NODE:
+			case DOUBLE_VAL_NODE:
+			case COMPLEX_VAL_NODE:
+			case CHARACTER_VAL_NODE:
 	            return true;
 	        default:
 	            return false;

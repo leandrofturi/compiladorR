@@ -105,7 +105,7 @@ form:   ID
     |   '.'
     ;
 
-sublist : sub (',' sub)* ;
+sublist : sub (',' sub)*;
 
 sub :   expr
     |   ID '='

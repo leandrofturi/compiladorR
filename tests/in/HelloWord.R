@@ -1,3 +1,2 @@
-myString <- "Hello, World!"
+myString <- list("Hello, World!", "Hello, World!", "Hello")
 print(myString)
-myString <- 1

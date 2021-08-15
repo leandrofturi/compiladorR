@@ -17,28 +17,28 @@ public class AST {
 	// Os campos 'data' NÃO ficam sincronizados!
 	public  final NodeKind kind;
 	public  final int intData;
-	public  final float floatData;
+	public  final double doubleData;
 	public  final Type type;
 	private final List<AST> children; // Privado para que a manipulação da lista seja controlável.
 
 	// Construtor completo para poder tornar todos os campos finais.
 	// Privado porque não queremos os dois campos 'data' preenchidos ao mesmo tempo.
-	private AST(NodeKind kind, int intData, float floatData, Type type) {
+	private AST(NodeKind kind, int intData, double doubleData, Type type) {
 		this.kind = kind;
 		this.intData = intData;
-		this.floatData = floatData;
+		this.doubleData = doubleData;
 		this.type = type;
 		this.children = new ArrayList<AST>();
 	}
 
 	// Cria o nó com um dado inteiro.
 	public AST(NodeKind kind, int intData, Type type) {
-		this(kind, intData, 0.0f, type);
+		this(kind, intData, 0.0, type);
 	}
 
-	// Cria o nó com um dado float.
-	public AST(NodeKind kind, float floatData, Type type) {
-		this(kind, 0, floatData, type);
+	// Cria o nó com um dado double.
+	public AST(NodeKind kind, double doubleData, Type type) {
+		this(kind, 0, doubleData, type);
 	}
 
 	// Adiciona um novo filho ao nó.
@@ -84,9 +84,9 @@ public class AST {
 	    	System.err.printf("%s", this.kind.toString());
 	    }
 	    if (NodeKind.hasData(this.kind)) {
-	        if (this.kind == NodeKind.REAL_VAL_NODE) {
-	        	System.err.printf("%.2f", this.floatData);
-	        } else if (this.kind == NodeKind.STR_VAL_NODE) {
+	        if (this.kind == NodeKind.DOUBLE_VAL_NODE) {
+	        	System.err.printf("%.2f", this.doubleData);
+	        } else if (this.kind == NodeKind.CHARACTER_VAL_NODE) {
 	        	System.err.printf("@%d", this.intData);
 	        } else {
 	        	System.err.printf("%d", this.intData);
