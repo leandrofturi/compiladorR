@@ -57,6 +57,7 @@ public class Main {
 		// fazer a análise.
 		SemanticChecker checker = new SemanticChecker();
 		checker.visit(tree);
+		checker.checkTypes();
 
 		// Saída final.
 		System.out.println("PARSE SUCCESSFUL!");

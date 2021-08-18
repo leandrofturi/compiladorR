@@ -16,7 +16,8 @@ import static typing.Type.DOUBLE_TYPE;
 import static typing.Type.COMPLEX_TYPE;
 import static typing.Type.CHARACTER_TYPE;
 import static typing.Type.LIST_TYPE;
-import static typing.Type.ID_TYPE;
+import static typing.Type.SYMBOL_TYPE;
+import static typing.Type.CLOSURE_TYPE;
 import static typing.Type.NO_TYPE;
 
 import static ast.NodeKind.PROG_NODE;
@@ -78,9 +79,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	private StrTable st = new StrTable();   // Tabela de strings.
     private VarTable vt = new VarTable();   // Tabela de variáveis.
 
-	private boolean assigned = false;		// Indica que um assign está ocorrendo. Utilizado para mudança de tipo
-	private Token declaredID;				// Atual variável declarada.
-
 	AST root; // Nó raiz da AST sendo construída.
 
     // Testa se o dado token foi declarado antes.
@@ -89,7 +87,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
     	int line = token.getLine();
    		int idx = vt.lookupVar(text);
     	if (idx == -1) {
-    		System.err.printf("SEMANTIC ERROR (%d): variable '%s' was not declared.\n", line, text);
+    		System.out.printf("SEMANTIC ERROR (%d): variable '%s' was not declared.\n", line, text);
     		System.exit(1);
             return null;
         }
@@ -161,21 +159,11 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprINT(RParser.ExprINTContext ctx) {
-		if(assigned) {
-			// Adiciona o ID corrente à tabela de variáveis.
-    		newVar(declaredID, INTEGER_TYPE);
-			assigned = false;
-		}
 		int intData = Integer.parseInt(ctx.getText());
 		return new AST(INTEGER_VAL_NODE, intData, INTEGER_TYPE);
 	}
 
 	@Override public AST visitExprNA(RParser.ExprNAContext ctx) {
-		if(assigned) {
-			// Adiciona o ID corrente à tabela de variáveis.
-    		newVar(declaredID, DOUBLE_TYPE);
-			assigned = false;
-		}
 		int intData = Integer.parseInt(ctx.getText());
 		return new AST(DOUBLE_VAL_NODE, intData, DOUBLE_TYPE);
 	}
@@ -230,18 +218,12 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	@Override
 	public AST visitExprSTRING(RParser.ExprSTRINGContext ctx) {
 		int idx = st.addStr(ctx.STRING().getText());
-		if(assigned) {
-			// Adiciona o ID corrente à tabela de variáveis.
-    		newVar(declaredID, CHARACTER_TYPE);
-			assigned = false;
-		}
 		return new AST(CHARACTER_VAL_NODE, idx, CHARACTER_TYPE);
 	}
 
 	@Override
 	public AST visitExprAssign(RParser.ExprAssignContext ctx) {
 		// Sinaliza que um assign ocorreu.
-		assigned = true;
 		AST node = AST.newSubtree(ASSIGN_NODE, NO_TYPE);
 		for (int i = 0; i < ctx.expr().size(); i++) {
 			AST child = visit(ctx.expr(i));
@@ -251,11 +233,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprTRUE(RParser.ExprTRUEContext ctx) {
-		if(assigned) {
-			// Adiciona o ID corrente à tabela de variáveis.
-    		newVar(declaredID, LOGICAL_TYPE);
-			assigned = false;
-		}
 		return new AST(LOGICAL_VAL_NODE, 1, LOGICAL_TYPE);
 	}
 
@@ -287,11 +264,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprInf(RParser.ExprInfContext ctx) {
-		if(assigned) {
-			// Adiciona o ID corrente à tabela de variáveis.
-    		newVar(declaredID, DOUBLE_TYPE);
-			assigned = false;
-		}
 		return new AST(DOUBLE_VAL_NODE, Double.POSITIVE_INFINITY, DOUBLE_TYPE);
 	}
 
@@ -314,11 +286,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprHEX(RParser.ExprHEXContext ctx) {
-		if(assigned) {
-			// Adiciona o ID corrente à tabela de variáveis.
-    		newVar(declaredID, DOUBLE_TYPE);
-			assigned = false;
-		}
 		double doubleData = Double.parseDouble(ctx.getText());
 		return new AST(DOUBLE_VAL_NODE, doubleData, DOUBLE_TYPE);
 	}
@@ -348,11 +315,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprFALSE(RParser.ExprFALSEContext ctx) {
-		if(assigned) {
-			// Adiciona o ID corrente à tabela de variáveis.
-    		newVar(declaredID, LOGICAL_TYPE);
-			assigned = false;
-		}
 		return new AST(LOGICAL_VAL_NODE, 0, LOGICAL_TYPE);
 	}
 
@@ -380,11 +342,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprFLOAT(RParser.ExprFLOATContext ctx) {
-		if(assigned) {
-			// Adiciona o ID corrente à tabela de variáveis.
-    		newVar(declaredID, DOUBLE_TYPE);
-			assigned = false;
-		}
 		double doubleData = Double.parseDouble(ctx.getText());
 		return new AST(DOUBLE_VAL_NODE, doubleData, DOUBLE_TYPE);
 	}
@@ -406,11 +363,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprNULL(RParser.ExprNULLContext ctx) {
-		if(assigned) {
-			// Adiciona o ID corrente à tabela de variáveis.
-    		newVar(declaredID, NULL_TYPE);
-			assigned = false;
-		}
 		return new AST(NULL_VAL_NODE, 0, NULL_TYPE);
 	}
 
@@ -440,9 +392,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 
 	@Override
 	public AST visitExprID(RParser.ExprIDContext ctx) {
-    	// Salva o ID corrente
-		declaredID = ctx.ID().getSymbol();
-		return newVar(declaredID, ID_TYPE);
+		return newVar(ctx.ID().getSymbol(), SYMBOL_TYPE);
 	}
 
 	@Override public AST visitExprif(RParser.ExprifContext ctx) {
@@ -455,11 +405,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprNaN(RParser.ExprNaNContext ctx) {
-		if(assigned) {
-			// Adiciona o ID corrente à tabela de variáveis.
-    		newVar(declaredID, DOUBLE_TYPE);
-			assigned = false;
-		}
 		return new AST(DOUBLE_VAL_NODE, Double.NaN, DOUBLE_TYPE);
 	}
 
@@ -500,8 +445,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitFormID(RParser.FormIDContext ctx) {
-		declaredID = ctx.ID().getSymbol();
-		return newVar(declaredID, ID_TYPE);
+		return newVar(ctx.ID().getSymbol(), SYMBOL_TYPE);
 	}
 
 	@Override public AST visitFormAssign(RParser.FormAssignContext ctx) {
@@ -525,8 +469,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	 }
 
 	@Override public AST visitSubID(RParser.SubIDContext ctx) {
-		declaredID = ctx.ID().getSymbol();
-		return newVar(declaredID, ID_TYPE);
+		return newVar(ctx.ID().getSymbol(), SYMBOL_TYPE);
 	}
 
 	@Override public AST visitSubAssignID(RParser.SubAssignIDContext ctx) {
@@ -567,5 +510,18 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		AST node = AST.newSubtree(EMPTY_NODE, NO_TYPE);
 		return node;
 	}
+
+	// ----------------------------------------------------------------------------
+    // Executa a verificação de tipos.
+    private void recursivecheckTypes(AST ast) {
+		for (int i = ast.getChildSize()-1; i >= 0; i--) {
+	        recursivecheckTypes(ast.getChild(i));
+	    }
+	    System.out.println(ast.kind.toString());
+    }
+
+	public void checkTypes() {
+	    recursivecheckTypes(root);
+    }
 
 }

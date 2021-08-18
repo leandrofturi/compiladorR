@@ -9,12 +9,12 @@ public enum NodeKind {
 	},
     VAR_DECL_NODE {
 		public String toString() {
-            return "var_decl";
+            return "var-decl";
         }
 	},
     VAR_USE_NODE {
 		public String toString() {
-            return "var_use";
+            return "var-use";
         }
 	},
 	EXPRSUBSUBLIST_NODE {
@@ -124,7 +124,7 @@ public enum NodeKind {
 	},
 	IFELSE_NODE {
 		public String toString() {
-            return "if_else";
+            return "if-else";
         }
 	},
 	FOR_NODE {

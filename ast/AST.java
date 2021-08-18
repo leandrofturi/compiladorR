@@ -43,16 +43,21 @@ public class AST {
 
 	// Adiciona um novo filho ao nó.
 	public void addChild(AST child) {
-		// A lista cresce automaticamente, então nunca vai dar erro ao adicionar.
 		this.children.add(child);
 	}
 
 	// Retorna o filho no índice passado.
-	// Não há nenhuma verificação de erros!
 	public AST getChild(int idx) {
-		// Claro que um código em produção precisa testar o índice antes para
-		// evitar uma exceção.
+		if (idx >= this.children.size()) {
+			System.err.printf("(%d) overlaps the size!", idx);
+			System.exit(1);
+		}
 	    return this.children.get(idx);
+	}
+
+	// Retorna a quantidade de filhos.
+	public int getChildSize() {
+	    return this.children.size();
 	}
 
 	// Cria um nó e pendura todos os filhos passados como argumento.

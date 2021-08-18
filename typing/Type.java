@@ -11,10 +11,20 @@ public enum Type {
 	},
 
 	//"symbol"	a variable name
+	SYMBOL_TYPE {
+		public String toString() {
+            return "symbol";
+        }
+	},
 
 	//"pairlist"	a pairlist object (mainly internal)
 
 	//"closure"	a function
+	CLOSURE_TYPE {
+		public String toString() {
+            return "closure";
+        }
+	},
 
 	//"environment"	an environment
 
@@ -77,13 +87,6 @@ public enum Type {
 	//"raw"	a vector containing bytes
 
 	//"S4"	an S4 object which is not a simple object
-
-	// Identificadores de variáveis.
-	ID_TYPE {
-		public String toString() {
-            return "id";
-        }
-	},
 
 	// Indica um erro de tipos.
 	NO_TYPE {
