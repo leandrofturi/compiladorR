@@ -37,6 +37,11 @@ public enum NodeKind {
             return "$|@";
         }
 	},
+	ASSOCRIGHT_NODE {
+		public String toString() {
+            return "assoc=right";
+        }
+	},
 	SIGN_NODE {
 		public String toString() {
             return "sign";
@@ -45,6 +50,11 @@ public enum NodeKind {
 	NAMESPACE_NODE {
 		public String toString() {
             return ":";
+        }
+	},
+	WRAPPEDIN_NODE {
+		public String toString() {
+            return "%";
         }
 	},
 	TIMES_NODE {
@@ -187,6 +197,21 @@ public enum NodeKind {
             return "character";
         }
 	},
+	VARARG_NODE {
+		public String toString() {
+            return "...";
+        }
+	},
+	POINT_NODE {
+		public String toString() {
+            return ".";
+        }
+	},
+	EMPTY_NODE {
+		public String toString() {
+            return " ";
+        }
+	},
 	LIST_VAL_NODE {
 		public String toString() {
             return "list";
@@ -196,8 +221,44 @@ public enum NodeKind {
 		public String toString() {
             return "sublist";
         }
+	},
+	EXPRLIST_NODE {
+		public String toString() {
+            return "expr-list";
+        }
+	},
+	FORMLIST_NODE {
+		public String toString() {
+            return "form-list";
+        }
+	},
+	FORMASSIGN_NODE {
+		public String toString() {
+            return "form-assign";
+        }
+	},
+	SUBEXPR_NODE {
+		public String toString() {
+            return "sub-expr";
+        }
+	},
+	SUBASSIGNID_NODE {
+		public String toString() {
+            return "sub-assign-id";
+        }
+	},
+	SUBASSIGNCHARACTER_NODE {
+		public String toString() {
+            return "sub-assign-character";
+        }
+	},
+	SUBASSIGNNULL_NODE {
+		public String toString() {
+            return "sub-assign-null";
+        }
 	};
-	
+
+
 	public static boolean hasData(NodeKind kind) {
 		switch(kind) {
 	        case VAR_DECL_NODE:

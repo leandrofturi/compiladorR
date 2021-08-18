@@ -1498,17 +1498,50 @@ public class RParser extends Parser {
 	}
 
 	public static class FormContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(RParser.ID, 0); }
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
 		public FormContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_form; }
+	 
+		public FormContext() { }
+		public void copyFrom(FormContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class FormIDContext extends FormContext {
+		public TerminalNode ID() { return getToken(RParser.ID, 0); }
+		public FormIDContext(FormContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitForm(this);
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitFormID(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class FormAssignContext extends FormContext {
+		public TerminalNode ID() { return getToken(RParser.ID, 0); }
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public FormAssignContext(FormContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitFormAssign(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class FormVaragsContext extends FormContext {
+		public FormVaragsContext(FormContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitFormVarags(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class FormPointContext extends FormContext {
+		public FormPointContext(FormContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitFormPoint(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1521,6 +1554,7 @@ public class RParser extends Parser {
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,10,_ctx) ) {
 			case 1:
+				_localctx = new FormIDContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(173);
@@ -1528,6 +1562,7 @@ public class RParser extends Parser {
 				}
 				break;
 			case 2:
+				_localctx = new FormAssignContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(174);
@@ -1539,6 +1574,7 @@ public class RParser extends Parser {
 				}
 				break;
 			case 3:
+				_localctx = new FormVaragsContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(177);
@@ -1546,6 +1582,7 @@ public class RParser extends Parser {
 				}
 				break;
 			case 4:
+				_localctx = new FormPointContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(178);
@@ -1622,18 +1659,109 @@ public class RParser extends Parser {
 	}
 
 	public static class SubContext extends ParserRuleContext {
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
-		}
-		public TerminalNode ID() { return getToken(RParser.ID, 0); }
-		public TerminalNode STRING() { return getToken(RParser.STRING, 0); }
 		public SubContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_sub; }
+	 
+		public SubContext() { }
+		public void copyFrom(SubContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	public static class SubIDContext extends SubContext {
+		public TerminalNode ID() { return getToken(RParser.ID, 0); }
+		public SubIDContext(SubContext ctx) { copyFrom(ctx); }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitSub(this);
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitSubID(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class SubAssignNULLContext extends SubContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public SubAssignNULLContext(SubContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitSubAssignNULL(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class SubVaragsContext extends SubContext {
+		public SubVaragsContext(SubContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitSubVarags(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class SubSTRINGContext extends SubContext {
+		public TerminalNode STRING() { return getToken(RParser.STRING, 0); }
+		public SubSTRINGContext(SubContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitSubSTRING(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class SubPointContext extends SubContext {
+		public SubPointContext(SubContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitSubPoint(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class SubAssignIDContext extends SubContext {
+		public TerminalNode ID() { return getToken(RParser.ID, 0); }
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public SubAssignIDContext(SubContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitSubAssignID(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class SubEmptyContext extends SubContext {
+		public SubEmptyContext(SubContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitSubEmpty(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class SubNULLContext extends SubContext {
+		public SubNULLContext(SubContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitSubNULL(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class SubAssignSTRINGContext extends SubContext {
+		public TerminalNode STRING() { return getToken(RParser.STRING, 0); }
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public SubAssignSTRINGContext(SubContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitSubAssignSTRING(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	public static class SubExprContext extends SubContext {
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public SubExprContext(SubContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof RVisitor ) return ((RVisitor<? extends T>)visitor).visitSubExpr(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1646,6 +1774,7 @@ public class RParser extends Parser {
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
 			case 1:
+				_localctx = new SubExprContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(189);
@@ -1653,6 +1782,7 @@ public class RParser extends Parser {
 				}
 				break;
 			case 2:
+				_localctx = new SubIDContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(190);
@@ -1662,6 +1792,7 @@ public class RParser extends Parser {
 				}
 				break;
 			case 3:
+				_localctx = new SubAssignIDContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(192);
@@ -1673,6 +1804,7 @@ public class RParser extends Parser {
 				}
 				break;
 			case 4:
+				_localctx = new SubSTRINGContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(195);
@@ -1682,6 +1814,7 @@ public class RParser extends Parser {
 				}
 				break;
 			case 5:
+				_localctx = new SubAssignSTRINGContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(197);
@@ -1693,6 +1826,7 @@ public class RParser extends Parser {
 				}
 				break;
 			case 6:
+				_localctx = new SubNULLContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(200);
@@ -1702,6 +1836,7 @@ public class RParser extends Parser {
 				}
 				break;
 			case 7:
+				_localctx = new SubAssignNULLContext(_localctx);
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(202);
@@ -1713,6 +1848,7 @@ public class RParser extends Parser {
 				}
 				break;
 			case 8:
+				_localctx = new SubVaragsContext(_localctx);
 				enterOuterAlt(_localctx, 8);
 				{
 				setState(205);
@@ -1720,6 +1856,7 @@ public class RParser extends Parser {
 				}
 				break;
 			case 9:
+				_localctx = new SubPointContext(_localctx);
 				enterOuterAlt(_localctx, 9);
 				{
 				setState(206);
@@ -1727,6 +1864,7 @@ public class RParser extends Parser {
 				}
 				break;
 			case 10:
+				_localctx = new SubEmptyContext(_localctx);
 				enterOuterAlt(_localctx, 10);
 				{
 				}

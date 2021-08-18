@@ -26,8 +26,10 @@ import static ast.NodeKind.EXPRSUBSUBLIST_NODE;
 import static ast.NodeKind.EXPRSUBLIST_NODE;
 import static ast.NodeKind.VALUEPKG_NODE;
 import static ast.NodeKind.EXTRACT_NODE;
+import static ast.NodeKind.ASSOCRIGHT_NODE;
 import static ast.NodeKind.SIGN_NODE;
 import static ast.NodeKind.NAMESPACE_NODE;
+import static ast.NodeKind.WRAPPEDIN_NODE;
 import static ast.NodeKind.TIMES_NODE;
 import static ast.NodeKind.SUM_NODE;
 import static ast.NodeKind.EQUALITY_NODE;
@@ -58,6 +60,16 @@ import static ast.NodeKind.COMPLEX_VAL_NODE;
 import static ast.NodeKind.CHARACTER_VAL_NODE;
 import static ast.NodeKind.LIST_VAL_NODE;
 import static ast.NodeKind.SUBLIST_NODE;
+import static ast.NodeKind.EXPRLIST_NODE;
+import static ast.NodeKind.FORMLIST_NODE;
+import static ast.NodeKind.FORMASSIGN_NODE;
+import static ast.NodeKind.SUBEXPR_NODE;
+import static ast.NodeKind.SUBASSIGNID_NODE;
+import static ast.NodeKind.SUBASSIGNCHARACTER_NODE;
+import static ast.NodeKind.SUBASSIGNNULL_NODE;
+import static ast.NodeKind.VARARG_NODE;
+import static ast.NodeKind.POINT_NODE;
+import static ast.NodeKind.EMPTY_NODE;
 
 
 // Analisador semântico de R implementado como um visitor da ParseTree do ANTLR.
@@ -143,7 +155,10 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		return root;
 	}
 
-	@Override public AST visitExprNotFormula(RParser.ExprNotFormulaContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprNotFormula(RParser.ExprNotFormulaContext ctx) {
+		AST node = AST.newSubtree(NOTFORMULA_NODE, NO_TYPE, visit(ctx.expr()));
+		return node;
+	}
 
 	@Override public AST visitExprINT(RParser.ExprINTContext ctx) {
 		if(assigned) {
@@ -165,19 +180,52 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		return new AST(DOUBLE_VAL_NODE, intData, DOUBLE_TYPE);
 	}
 
-	@Override public AST visitExprValuePkg(RParser.ExprValuePkgContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprValuePkg(RParser.ExprValuePkgContext ctx) {
+		AST node = AST.newSubtree(VALUEPKG_NODE, NO_TYPE);
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			AST child = visit(ctx.expr(i));
+    		node.addChild(child);
+    	}
+		return node;
+	}
 
-	@Override public AST visitExprPexprP(RParser.ExprPexprPContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprPexprP(RParser.ExprPexprPContext ctx) {
+		AST node = AST.newSubtree(PAR_NODE, NO_TYPE, visit(ctx.expr()));
+		return node;
+	}
 
-	@Override public AST visitExprbreak(RParser.ExprbreakContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprbreak(RParser.ExprbreakContext ctx) {
+		AST node = AST.newSubtree(BREAK_NODE, NO_TYPE);
+		return node;
+	}
 
-	@Override public AST visitExprWrappedin(RParser.ExprWrappedinContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprWrappedin(RParser.ExprWrappedinContext ctx) {
+		AST node = AST.newSubtree(WRAPPEDIN_NODE, NO_TYPE);
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			AST child = visit(ctx.expr(i));
+    		node.addChild(child);
+    	}
+		return node;
+	}
 
-	@Override public AST visitExprSubsublist(RParser.ExprSubsublistContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprSubsublist(RParser.ExprSubsublistContext ctx) {
+		AST node = AST.newSubtree(EXPRSUBSUBLIST_NODE, NO_TYPE, visit(ctx.expr()), visit(ctx.sublist()));
+		return node;
+	}
 
-	@Override public AST visitExprExtract(RParser.ExprExtractContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprExtract(RParser.ExprExtractContext ctx) {
+		AST node = AST.newSubtree(EXTRACT_NODE, NO_TYPE);
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			AST child = visit(ctx.expr(i));
+    		node.addChild(child);
+    	}
+		return node;
+	}
 
-	@Override public AST visitExprCompound(RParser.ExprCompoundContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprCompound(RParser.ExprCompoundContext ctx) {
+		AST node = AST.newSubtree(COMPOUND_NODE, NO_TYPE, visit(ctx.exprlist()));
+		return node;
+	}
 
 	@Override
 	public AST visitExprSTRING(RParser.ExprSTRINGContext ctx) {
@@ -211,9 +259,23 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		return new AST(LOGICAL_VAL_NODE, 1, LOGICAL_TYPE);
 	}
 
-	@Override public AST visitExprfor(RParser.ExprforContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprfor(RParser.ExprforContext ctx) {
+		AST node = AST.newSubtree(FOR_NODE, NO_TYPE);
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			AST child = visit(ctx.expr(i));
+    		node.addChild(child);
+    	}
+		return node;
+	}
 
-	@Override public AST visitExprwhile(RParser.ExprwhileContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprwhile(RParser.ExprwhileContext ctx) {
+		AST node = AST.newSubtree(WHILE_NODE, NO_TYPE);
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			AST child = visit(ctx.expr(i));
+    		node.addChild(child);
+    	}
+		return node;
+	}
 
 	@Override public AST visitExprOr(RParser.ExprOrContext ctx) {
 		AST node = AST.newSubtree(OR_NODE, NO_TYPE);
@@ -242,7 +304,14 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		return node;
 	}
 
-	@Override public AST visitExprifelse(RParser.ExprifelseContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprifelse(RParser.ExprifelseContext ctx) {
+		AST node = AST.newSubtree(IFELSE_NODE, NO_TYPE);
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			AST child = visit(ctx.expr(i));
+    		node.addChild(child);
+    	}
+		return node;
+	}
 
 	@Override public AST visitExprHEX(RParser.ExprHEXContext ctx) {
 		if(assigned) {
@@ -259,11 +328,24 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		return node;
 	}
 
-	@Override public AST visitExprHelp(RParser.ExprHelpContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprHelp(RParser.ExprHelpContext ctx) {
+		AST node = AST.newSubtree(HELP_NODE, NO_TYPE, visit(ctx.expr()));
+		return node;
+	}
 
-	@Override public AST visitExprAssocRight(RParser.ExprAssocRightContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprAssocRight(RParser.ExprAssocRightContext ctx) {
+		AST node = AST.newSubtree(ASSOCRIGHT_NODE, NO_TYPE);
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			AST child = visit(ctx.expr(i));
+    		node.addChild(child);
+    	}
+		return node;
+	}
 
-	@Override public AST visitExprNot(RParser.ExprNotContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprNot(RParser.ExprNotContext ctx) {
+		AST node = AST.newSubtree(NOT_NODE, NO_TYPE, visit(ctx.expr()));
+		return node;
+	}
 
 	@Override public AST visitExprFALSE(RParser.ExprFALSEContext ctx) {
 		if(assigned) {
@@ -274,9 +356,19 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		return new AST(LOGICAL_VAL_NODE, 0, LOGICAL_TYPE);
 	}
 
-	@Override public AST visitExprSublist(RParser.ExprSublistContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprSublist(RParser.ExprSublistContext ctx) {
+		AST node = AST.newSubtree(EXPRSUBLIST_NODE, NO_TYPE, visit(ctx.expr()), visit(ctx.sublist()));
+		return node;
+	}
 
-	@Override public AST visitExprNamespace(RParser.ExprNamespaceContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprNamespace(RParser.ExprNamespaceContext ctx) {
+		AST node = AST.newSubtree(NAMESPACE_NODE, NO_TYPE);
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			AST child = visit(ctx.expr(i));
+    		node.addChild(child);
+    	}
+		return node;
+	}
 
 	@Override public AST visitExprEquality(RParser.ExprEqualityContext ctx) {
 		AST node = AST.newSubtree(EQUALITY_NODE, NO_TYPE);
@@ -308,7 +400,10 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		return node;
 	}
 
-	@Override public AST visitExprDefine(RParser.ExprDefineContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprDefine(RParser.ExprDefineContext ctx) {
+		AST node = AST.newSubtree(DEFINE_NODE, NO_TYPE, visit(ctx.formlist()), visit(ctx.expr()));
+		return node;
+	}
 
 	@Override public AST visitExprNULL(RParser.ExprNULLContext ctx) {
 		if(assigned) {
@@ -316,7 +411,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
     		newVar(declaredID, NULL_TYPE);
 			assigned = false;
 		}
-		int intData = Integer.parseInt(ctx.getText());
 		return new AST(NULL_VAL_NODE, 0, NULL_TYPE);
 	}
 
@@ -329,9 +423,15 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		return node;
 	}
 
-	@Override public AST visitExprrepeat(RParser.ExprrepeatContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprrepeat(RParser.ExprrepeatContext ctx) {
+		AST node = AST.newSubtree(REPEAT_NODE, NO_TYPE, visit(ctx.expr()));
+		return node;
+	}
 
-	@Override public AST visitExprnext(RParser.ExprnextContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprnext(RParser.ExprnextContext ctx) {
+		AST node = AST.newSubtree(NEXT_NODE, NO_TYPE);
+		return node;
+	}
 
 	@Override public AST visitExprCall(RParser.ExprCallContext ctx) {
 		AST node = AST.newSubtree(CALL_NODE, NO_TYPE, visit(ctx.expr()), visit(ctx.sublist()));
@@ -345,7 +445,14 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		return newVar(declaredID, ID_TYPE);
 	}
 
-	@Override public AST visitExprif(RParser.ExprifContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprif(RParser.ExprifContext ctx) {
+		AST node = AST.newSubtree(IF_NODE, NO_TYPE);
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			AST child = visit(ctx.expr(i));
+    		node.addChild(child);
+    	}
+		return node;
+	}
 
 	@Override public AST visitExprNaN(RParser.ExprNaNContext ctx) {
 		if(assigned) {
@@ -356,13 +463,32 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		return new AST(DOUBLE_VAL_NODE, Double.NaN, DOUBLE_TYPE);
 	}
 
-	@Override public AST visitExprEFormulaE(RParser.ExprEFormulaEContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprEFormulaE(RParser.ExprEFormulaEContext ctx) {
+		AST node = AST.newSubtree(FORMULA_NODE, NO_TYPE);
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			AST child = visit(ctx.expr(i));
+    		node.addChild(child);
+    	}
+		return node;
+	}
 
-	@Override public AST visitExprlist(RParser.ExprlistContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitExprlist(RParser.ExprlistContext ctx) {
+		AST node = AST.newSubtree(EXPRLIST_NODE, NO_TYPE);
+		for (int i = 0; i < ctx.expr().size(); i++) {
+			AST child = visit(ctx.expr(i));
+    		node.addChild(child);
+    	}
+		return node;
+	}
 
-	@Override public AST visitFormlist(RParser.FormlistContext ctx) { return visitChildren(ctx); }
-
-	@Override public AST visitForm(RParser.FormContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitFormlist(RParser.FormlistContext ctx) {
+		AST node = AST.newSubtree(FORMLIST_NODE, NO_TYPE);
+		for (int i = 0; i < ctx.form().size(); i++) {
+			AST child = visit(ctx.form(i));
+    		node.addChild(child);
+    	}
+		return node;
+	}
 
 	@Override public AST visitSublist(RParser.SublistContext ctx) {
 		AST node = AST.newSubtree(SUBLIST_NODE, NO_TYPE);
@@ -373,6 +499,73 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		return node;
 	}
 
-	@Override public AST visitSub(RParser.SubContext ctx) { return visitChildren(ctx); }
+	@Override public AST visitFormID(RParser.FormIDContext ctx) {
+		declaredID = ctx.ID().getSymbol();
+		return newVar(declaredID, ID_TYPE);
+	}
+
+	@Override public AST visitFormAssign(RParser.FormAssignContext ctx) {
+		AST node = AST.newSubtree(FORMASSIGN_NODE, NO_TYPE, visit(ctx.ID()), visit(ctx.expr()));
+		return node;
+	}
+
+	@Override public AST visitFormVarags(RParser.FormVaragsContext ctx) {
+		AST node = AST.newSubtree(VARARG_NODE, NO_TYPE);
+		return node;
+	}
+
+	@Override public AST visitFormPoint(RParser.FormPointContext ctx) {
+		AST node = AST.newSubtree(POINT_NODE, NO_TYPE);
+		return node;
+	}
+
+	@Override public AST visitSubExpr(RParser.SubExprContext ctx) {
+		AST node = AST.newSubtree(SUBEXPR_NODE, NO_TYPE, visit(ctx.expr()));
+		return node;
+	 }
+
+	@Override public AST visitSubID(RParser.SubIDContext ctx) {
+		declaredID = ctx.ID().getSymbol();
+		return newVar(declaredID, ID_TYPE);
+	}
+
+	@Override public AST visitSubAssignID(RParser.SubAssignIDContext ctx) {
+		AST node = AST.newSubtree(SUBASSIGNID_NODE, NO_TYPE, visit(ctx.ID()), visit(ctx.expr()));
+		return node;
+	}
+
+	@Override public AST visitSubSTRING(RParser.SubSTRINGContext ctx) {
+		int idx = st.addStr(ctx.STRING().getText());
+		return new AST(CHARACTER_VAL_NODE, idx, CHARACTER_TYPE);
+	}
+
+	@Override public AST visitSubAssignSTRING(RParser.SubAssignSTRINGContext ctx) {
+		AST node = AST.newSubtree(SUBASSIGNCHARACTER_NODE, NO_TYPE, visit(ctx.STRING()), visit(ctx.expr()));
+		return node;
+	}
+
+	@Override public AST visitSubNULL(RParser.SubNULLContext ctx) {
+		return new AST(NULL_VAL_NODE, 0, NULL_TYPE);
+	}
+
+	@Override public AST visitSubAssignNULL(RParser.SubAssignNULLContext ctx) {
+		AST node = AST.newSubtree(SUBASSIGNNULL_NODE, NO_TYPE, visit(ctx.expr()), new AST(NULL_VAL_NODE, 0, NULL_TYPE));
+		return node;
+	}
+
+	@Override public AST visitSubVarags(RParser.SubVaragsContext ctx) {
+		AST node = AST.newSubtree(VARARG_NODE, NO_TYPE);
+		return node;
+	}
+
+	@Override public AST visitSubPoint(RParser.SubPointContext ctx) {
+		AST node = AST.newSubtree(POINT_NODE, NO_TYPE);
+		return node;
+	}
+
+	@Override public AST visitSubEmpty(RParser.SubEmptyContext ctx) {
+		AST node = AST.newSubtree(EMPTY_NODE, NO_TYPE);
+		return node;
+	}
 
 }

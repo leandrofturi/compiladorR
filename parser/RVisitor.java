@@ -316,11 +316,33 @@ public interface RVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFormlist(RParser.FormlistContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link RParser#form}.
+	 * Visit a parse tree produced by the {@code formID}
+	 * labeled alternative in {@link RParser#form}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitForm(RParser.FormContext ctx);
+	T visitFormID(RParser.FormIDContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code formAssign}
+	 * labeled alternative in {@link RParser#form}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFormAssign(RParser.FormAssignContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code formVarags}
+	 * labeled alternative in {@link RParser#form}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFormVarags(RParser.FormVaragsContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code formPoint}
+	 * labeled alternative in {@link RParser#form}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFormPoint(RParser.FormPointContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link RParser#sublist}.
 	 * @param ctx the parse tree
@@ -328,9 +350,73 @@ public interface RVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSublist(RParser.SublistContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link RParser#sub}.
+	 * Visit a parse tree produced by the {@code subExpr}
+	 * labeled alternative in {@link RParser#sub}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSub(RParser.SubContext ctx);
+	T visitSubExpr(RParser.SubExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code subID}
+	 * labeled alternative in {@link RParser#sub}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubID(RParser.SubIDContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code subAssignID}
+	 * labeled alternative in {@link RParser#sub}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubAssignID(RParser.SubAssignIDContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code subSTRING}
+	 * labeled alternative in {@link RParser#sub}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubSTRING(RParser.SubSTRINGContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code subAssignSTRING}
+	 * labeled alternative in {@link RParser#sub}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubAssignSTRING(RParser.SubAssignSTRINGContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code subNULL}
+	 * labeled alternative in {@link RParser#sub}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubNULL(RParser.SubNULLContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code subAssignNULL}
+	 * labeled alternative in {@link RParser#sub}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubAssignNULL(RParser.SubAssignNULLContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code subVarags}
+	 * labeled alternative in {@link RParser#sub}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubVarags(RParser.SubVaragsContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code subPoint}
+	 * labeled alternative in {@link RParser#sub}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubPoint(RParser.SubPointContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code subEmpty}
+	 * labeled alternative in {@link RParser#sub}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSubEmpty(RParser.SubEmptyContext ctx);
 }

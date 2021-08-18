@@ -99,24 +99,24 @@ exprlist
 
 formlist : form (',' form)* ;
 
-form:   ID
-    |   ID '=' expr
-    |   '...'
-    |   '.'
+form:   ID                                                          # formID
+    |   ID '=' expr                                                 # formAssign
+    |   '...'                                                       # formVarags
+    |   '.'                                                         # formPoint
     ;
 
 sublist : sub (',' sub)*;
 
-sub :   expr
-    |   ID '='
-    |   ID '=' expr
-    |   STRING '='
-    |   STRING '=' expr
-    |   'NULL' '='
-    |   'NULL' '=' expr
-    |   '...'
-    |   '.'
-    |
+sub :   expr                                                        # subExpr
+    |   ID '='                                                      # subID
+    |   ID '=' expr                                                 # subAssignID
+    |   STRING '='                                                  # subSTRING
+    |   STRING '=' expr                                             # subAssignSTRING
+    |   'NULL' '='                                                  # subNULL
+    |   'NULL' '=' expr                                             # subAssignNULL
+    |   '...'                                                       # subVarags
+    |   '.'                                                         # subPoint
+    |                                                               # subEmpty
     ;
 
 HEX :   '0' ('x'|'X') HEXDIGIT+ [Ll]? ;
