@@ -20,6 +20,11 @@ import static typing.Type.SYMBOL_TYPE;
 import static typing.Type.CLOSURE_TYPE;
 import static typing.Type.NO_TYPE;
 
+import typing.Conv;
+import typing.Conv.Unif;
+import static typing.Conv.I2L;
+import static typing.Conv.D2L;
+
 import static ast.NodeKind.PROG_NODE;
 import static ast.NodeKind.VAR_DECL_NODE;
 import static ast.NodeKind.VAR_USE_NODE;
@@ -31,9 +36,13 @@ import static ast.NodeKind.ASSOCRIGHT_NODE;
 import static ast.NodeKind.SIGN_NODE;
 import static ast.NodeKind.NAMESPACE_NODE;
 import static ast.NodeKind.WRAPPEDIN_NODE;
+import static ast.NodeKind.EQ_NODE;
+import static ast.NodeKind.LT_NODE;
+import static ast.NodeKind.GT_NODE;
+import static ast.NodeKind.PLUS_NODE;
+import static ast.NodeKind.MINUS_NODE;
 import static ast.NodeKind.TIMES_NODE;
-import static ast.NodeKind.SUM_NODE;
-import static ast.NodeKind.EQUALITY_NODE;
+import static ast.NodeKind.OVER_NODE;
 import static ast.NodeKind.NOT_NODE;
 import static ast.NodeKind.AND_NODE;
 import static ast.NodeKind.OR_NODE;
@@ -325,8 +334,21 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprNot(RParser.ExprNotContext ctx) {
-		AST node = AST.newSubtree(NOT_NODE, NO_TYPE, visit(ctx.expr()));
-		return node;
+		// Visita recursivamente a subexpressão.
+		AST r = visit(ctx.expr());
+
+		// Faz a unificação dos tipos para determinar o tipo resultante.
+		Type rt = r.type;
+		if (rt == INTEGER_TYPE) {
+			r = Conv.createConvNode(I2L, r);
+		} else if (rt == DOUBLE_TYPE) {
+			r = Conv.createConvNode(D2L, r);
+		} else if (rt != LOGICAL_TYPE) {
+			System.out.printf("SEMANTIC ERROR: incompatible type for operator '!', RHS is '%s'.\n", rt.toString());
+    		System.exit(1);
+		}
+
+		return AST.newSubtree(NOT_NODE, LOGICAL_TYPE, r);
 	}
 
 	@Override public AST visitExprFALSE(RParser.ExprFALSEContext ctx) {
@@ -349,12 +371,31 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprEquality(RParser.ExprEqualityContext ctx) {
-		AST node = AST.newSubtree(EQUALITY_NODE, NO_TYPE);
-		for (int i = 0; i < ctx.expr().size(); i++) {
-			AST child = visit(ctx.expr(i));
-    		node.addChild(child);
-    	}
-		return node;
+		// Visita recursivamente as duas subexpressões.
+		AST l = visit(ctx.expr(0));
+		AST r = visit(ctx.expr(1));
+
+		// Faz a unificação dos tipos para determinar o tipo resultante.
+		Type lt = l.type;
+		Type rt = r.type;
+		Unif unif = lt.unifyLogic(rt);
+
+		if (unif.type == NO_TYPE) {
+			typeError(ctx.op.getLine(), ctx.op.getText(), lt, rt);
+		}
+
+		// Cria os nós de conversão que forem necessários segundo a estrutura de conversão.
+		l = Conv.createConvNode(unif.lc, l);
+		r = Conv.createConvNode(unif.rc, r);
+
+		// Olha qual é o operador e cria o nó correspondente na AST.
+		if (ctx.op.getText().equals("+")) {
+			return AST.newSubtree(EQ_NODE, unif.type, l, r);
+		} else if (ctx.op.getText().equals("<")) {
+			return AST.newSubtree(LT_NODE, unif.type, l, r);
+		} else {
+			return AST.newSubtree(GT_NODE, unif.type, l, r);
+		}
 	}
 
 	@Override public AST visitExprFLOAT(RParser.ExprFLOATContext ctx) {
@@ -366,12 +407,29 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	@Override public AST visitExprCOMPLEX(RParser.ExprCOMPLEXContext ctx) { return visitChildren(ctx); }
 
 	@Override public AST visitExprSum(RParser.ExprSumContext ctx) {
-		AST node = AST.newSubtree(SUM_NODE, NO_TYPE);
-		for (int i = 0; i < ctx.expr().size(); i++) {
-			AST child = visit(ctx.expr(i));
-    		node.addChild(child);
-    	}
-		return node;
+		// Visita recursivamente as duas subexpressões.
+		AST l = visit(ctx.expr(0));
+		AST r = visit(ctx.expr(1));
+
+		// Faz a unificação dos tipos para determinar o tipo resultante.
+		Type lt = l.type;
+		Type rt = r.type;
+		Unif unif = lt.unifyArithmetic(rt);
+
+		if (unif.type == NO_TYPE) {
+			typeError(ctx.op.getLine(), ctx.op.getText(), lt, rt);
+		}
+
+		// Cria os nós de conversão que forem necessários segundo a estrutura de conversão.
+		l = Conv.createConvNode(unif.lc, l);
+		r = Conv.createConvNode(unif.rc, r);
+
+		// Olha qual é o operador e cria o nó correspondente na AST.
+		if (ctx.op.getText().equals("+")) {
+			return AST.newSubtree(PLUS_NODE, unif.type, l, r);
+		} else {
+			return AST.newSubtree(MINUS_NODE, unif.type, l, r);
+		}
 	}
 
 	@Override public AST visitExprDefine(RParser.ExprDefineContext ctx) {
@@ -385,12 +443,29 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprTimes(RParser.ExprTimesContext ctx) {
-		AST node = AST.newSubtree(TIMES_NODE, NO_TYPE);
-		for (int i = 0; i < ctx.expr().size(); i++) {
-			AST child = visit(ctx.expr(i));
-    		node.addChild(child);
-    	}
-		return node;
+		// Visita recursivamente as duas subexpressões.
+		AST l = visit(ctx.expr(0));
+		AST r = visit(ctx.expr(1));
+
+		// Faz a unificação dos tipos para determinar o tipo resultante.
+		Type lt = l.type;
+		Type rt = r.type;
+		Unif unif = lt.unifyArithmetic(rt);
+
+		if (unif.type == NO_TYPE) {
+			typeError(ctx.op.getLine(), ctx.op.getText(), lt, rt);
+		}
+
+		// Cria os nós de conversão que forem necessários segundo a estrutura de conversão.
+		l = Conv.createConvNode(unif.lc, l);
+		r = Conv.createConvNode(unif.rc, r);
+
+		// Olha qual é o operador e cria o nó correspondente na AST.
+		if (ctx.op.getText().equals("*")) {
+			return AST.newSubtree(TIMES_NODE, unif.type, l, r);
+		} else {
+			return AST.newSubtree(OVER_NODE, unif.type, l, r);
+		}
 	}
 
 	@Override public AST visitExprrepeat(RParser.ExprrepeatContext ctx) {

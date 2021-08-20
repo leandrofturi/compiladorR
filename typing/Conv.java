@@ -1,22 +1,19 @@
-/*
 package typing;
 
-import static ast.NodeKind.B2I_NODE;
-import static ast.NodeKind.B2R_NODE;
-import static ast.NodeKind.B2S_NODE;
-import static ast.NodeKind.I2R_NODE;
-import static ast.NodeKind.I2S_NODE;
-import static ast.NodeKind.R2S_NODE;
+import static ast.NodeKind.L2I_NODE;
+import static ast.NodeKind.L2D_NODE;
+import static ast.NodeKind.I2D_NODE;
+import static ast.NodeKind.I2L_NODE;
+import static ast.NodeKind.D2L_NODE;
 
 import ast.AST;
 
 public enum Conv {
-	B2I,  // Bool to Int
-    B2R,  // Bool to Real
-    B2S,  // Bool to String
-    I2R,  // Int to Real
-    I2S,  // Int to String
-    R2S,  // Real to String
+	L2I,  // logical to integer
+    L2D,  // logical to double
+    I2D,  // integer to double
+	I2L,  // integer to logical
+    D2L,  // double to logical
     NONE; // No type conversion
     
 	// Cria e retorna um novo nó de conversão da AST segundo o parâmetro 'conv' passado.
@@ -25,25 +22,22 @@ public enum Conv {
 	// nó passado como argumento.
 	public static AST createConvNode(Conv conv, AST n) {
 	    switch(conv) {
-	        case B2I:  return AST.newSubtree(B2I_NODE, Type.INT_TYPE, n);
-	        case B2R:  return AST.newSubtree(B2R_NODE, Type.REAL_TYPE, n);
-	        case B2S:  return AST.newSubtree(B2S_NODE, Type.STR_TYPE, n);
-	        case I2R:  return AST.newSubtree(I2R_NODE, Type.REAL_TYPE, n);
-	        case I2S:  return AST.newSubtree(I2S_NODE, Type.STR_TYPE, n);
-	        case R2S:  return AST.newSubtree(R2S_NODE, Type.STR_TYPE, n);
+	        case L2I:  return AST.newSubtree(L2I_NODE, Type.INTEGER_TYPE, n);
+	        case L2D:  return AST.newSubtree(L2D_NODE, Type.DOUBLE_TYPE, n);
+	        case I2D:  return AST.newSubtree(I2D_NODE, Type.DOUBLE_TYPE, n);
+			case I2L:  return AST.newSubtree(I2L_NODE, Type.LOGICAL_TYPE, n);
+	        case D2L:  return AST.newSubtree(D2L_NODE, Type.LOGICAL_TYPE, n);
 	        case NONE: return n;
 	        default:
 	            System.err.printf("INTERNAL ERROR: invalid conversion of types!\n");
-	            // A partir de agora vou abortar no primeiro erro para facilitar.
 	            System.exit(1);
-	            return null; // Never reached...
+	            return null;
 	    }
 	}
 	
 	// Classe que define as informações de unificação para os tipos em expressões.
     public static final class Unif {
     	
-    	// Declarei tudo como final para não precisar de getter/setter.
     	public final Type type; // Tipo unificado
 		public final Conv lc; 	// Conversão do lado esquerdo
 		public final Conv rc; 	// Conversão do lado direito
@@ -56,5 +50,3 @@ public enum Conv {
 		
 	}
 }
-
-*/

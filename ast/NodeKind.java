@@ -57,19 +57,39 @@ public enum NodeKind {
             return "%";
         }
 	},
+	EQ_NODE {
+		public String toString() {
+            return "==";
+        }
+	},
+	LT_NODE {
+		public String toString() {
+            return "<";
+        }
+	},
+	GT_NODE {
+		public String toString() {
+            return "<";
+        }
+	},
+	PLUS_NODE {
+		public String toString() {
+            return "+";
+        }
+	},
+    MINUS_NODE {
+		public String toString() {
+            return "-";
+        }
+	},
 	TIMES_NODE {
 		public String toString() {
-            return "*|/";
+            return "*";
         }
 	},
-	SUM_NODE {
+    OVER_NODE {
 		public String toString() {
-            return "+|-";
-        }
-	},
-	EQUALITY_NODE {
-		public String toString() {
-            return ">|>=|<|<=|==|!=";
+            return "/";
         }
 	},
 	NOT_NODE {
@@ -255,6 +275,31 @@ public enum NodeKind {
 	SUBASSIGNNULL_NODE {
 		public String toString() {
             return "sub-assign-null";
+        }
+	},
+	L2I_NODE {
+		public String toString() {
+            return "L2I";
+        }
+	},
+	L2D_NODE {
+		public String toString() {
+            return "L2D";
+        }
+	},
+	I2D_NODE {
+		public String toString() {
+            return "I2D";
+        }
+	},
+	I2L_NODE {
+		public String toString() {
+            return "I2L";
+        }
+	},
+	D2L_NODE {
+		public String toString() {
+            return "D2L";
         }
 	};
 

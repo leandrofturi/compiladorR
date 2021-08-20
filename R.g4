@@ -57,9 +57,9 @@ expr:
     |   ('-'|'+') expr                                              # exprSign
     |   expr ':' expr                                               # exprNamespace
     |   expr USER_OP expr                                           # exprWrappedin // anything wrappedin %: '%' .* '%'
-    |   expr ('*'|'/') expr                                         # exprTimes
-    |   expr ('+'|'-') expr                                         # exprSum
-    |   expr ('>'|'>='|'<'|'<='|'=='|'!=') expr                     # exprEquality
+    |   expr op=('*'|'/') expr                                      # exprTimes
+    |   expr op=('+'|'-') expr                                      # exprSum
+    |   expr op=('>'|'>='|'<'|'<='|'=='|'!=') expr                  # exprEquality
     |   '!' expr                                                    # exprNot
     |   expr ('&'|'&&') expr                                        # exprAnd
     |   expr ('|'|'||') expr                                        # exprOr
