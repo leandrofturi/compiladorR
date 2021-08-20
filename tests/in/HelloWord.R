@@ -1,3 +1,2 @@
 myString <- 1
-myString <- "aaaa"
-i <- print(myString)
+myString <- list(1,2,3)

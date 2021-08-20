@@ -81,6 +81,10 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 
 	AST root; // Nó raiz da AST sendo construída.
 
+	private Type declaredType = null;		// Actual declared type.
+	private Token declaredVar = null;		// Actual declared variable.
+	private boolean assigned = false;		// Sinaliza que um assign ocorreu.
+
     // Testa se o dado token foi declarado antes.
     AST checkVar(Token token) {
     	String text = token.getText();
@@ -159,11 +163,13 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprINT(RParser.ExprINTContext ctx) {
+		declaredType = INTEGER_TYPE;
 		int intData = Integer.parseInt(ctx.getText());
 		return new AST(INTEGER_VAL_NODE, intData, INTEGER_TYPE);
 	}
 
 	@Override public AST visitExprNA(RParser.ExprNAContext ctx) {
+		declaredType = DOUBLE_TYPE;
 		int intData = Integer.parseInt(ctx.getText());
 		return new AST(DOUBLE_VAL_NODE, intData, DOUBLE_TYPE);
 	}
@@ -217,22 +223,29 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 
 	@Override
 	public AST visitExprSTRING(RParser.ExprSTRINGContext ctx) {
+		declaredType = CHARACTER_TYPE;
 		int idx = st.addStr(ctx.STRING().getText());
 		return new AST(CHARACTER_VAL_NODE, idx, CHARACTER_TYPE);
 	}
 
 	@Override
 	public AST visitExprAssign(RParser.ExprAssignContext ctx) {
-		// Sinaliza que um assign ocorreu.
+		assigned = true;
 		AST node = AST.newSubtree(ASSIGN_NODE, NO_TYPE);
 		for (int i = 0; i < ctx.expr().size(); i++) {
 			AST child = visit(ctx.expr(i));
     		node.addChild(child);
     	}
+		if (assigned) {
+			newVar(declaredVar, declaredType);
+			assigned = false;
+			declaredVar = null;
+		}
 		return node;
 	}
 
 	@Override public AST visitExprTRUE(RParser.ExprTRUEContext ctx) {
+		declaredType = LOGICAL_TYPE;
 		return new AST(LOGICAL_VAL_NODE, 1, LOGICAL_TYPE);
 	}
 
@@ -264,6 +277,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprInf(RParser.ExprInfContext ctx) {
+		declaredType = DOUBLE_TYPE;
 		return new AST(DOUBLE_VAL_NODE, Double.POSITIVE_INFINITY, DOUBLE_TYPE);
 	}
 
@@ -286,6 +300,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprHEX(RParser.ExprHEXContext ctx) {
+		declaredType = DOUBLE_TYPE;
 		double doubleData = Double.parseDouble(ctx.getText());
 		return new AST(DOUBLE_VAL_NODE, doubleData, DOUBLE_TYPE);
 	}
@@ -315,6 +330,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprFALSE(RParser.ExprFALSEContext ctx) {
+		declaredType = LOGICAL_TYPE;
 		return new AST(LOGICAL_VAL_NODE, 0, LOGICAL_TYPE);
 	}
 
@@ -342,6 +358,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprFLOAT(RParser.ExprFLOATContext ctx) {
+		declaredType = DOUBLE_TYPE;
 		double doubleData = Double.parseDouble(ctx.getText());
 		return new AST(DOUBLE_VAL_NODE, doubleData, DOUBLE_TYPE);
 	}
@@ -363,6 +380,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprNULL(RParser.ExprNULLContext ctx) {
+		declaredType = NULL_TYPE;
 		return new AST(NULL_VAL_NODE, 0, NULL_TYPE);
 	}
 
@@ -392,6 +410,10 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 
 	@Override
 	public AST visitExprID(RParser.ExprIDContext ctx) {
+		if (declaredVar == null) {
+			declaredVar = ctx.ID().getSymbol();
+		}
+		declaredType = CLOSURE_TYPE;
 		return newVar(ctx.ID().getSymbol(), SYMBOL_TYPE);
 	}
 
@@ -405,6 +427,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprNaN(RParser.ExprNaNContext ctx) {
+		declaredType = NULL_TYPE;
 		return new AST(DOUBLE_VAL_NODE, Double.NaN, DOUBLE_TYPE);
 	}
 
@@ -510,18 +533,5 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		AST node = AST.newSubtree(EMPTY_NODE, NO_TYPE);
 		return node;
 	}
-
-	// ----------------------------------------------------------------------------
-    // Executa a verificação de tipos.
-    private void recursivecheckTypes(AST ast) {
-		for (int i = ast.getChildSize()-1; i >= 0; i--) {
-	        recursivecheckTypes(ast.getChild(i));
-	    }
-	    System.out.println(ast.kind.toString());
-    }
-
-	public void checkTypes() {
-	    recursivecheckTypes(root);
-    }
 
 }
