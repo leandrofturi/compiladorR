@@ -1,5 +1,8 @@
 package typing;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static ast.NodeKind.L2I_NODE;
 import static ast.NodeKind.L2D_NODE;
 import static ast.NodeKind.I2D_NODE;
@@ -39,13 +42,16 @@ public enum Conv {
     public static final class Unif {
     	
     	public final Type type; // Tipo unificado
-		public final Conv lc; 	// Conversão do lado esquerdo
-		public final Conv rc; 	// Conversão do lado direito
+		public final List<Conv> c = new ArrayList<>(); // Elementos
     	
-		public Unif(Type type, Conv lc, Conv rc) {
+		public Unif(Type type, List<Conv> args) {
 			this.type = type;
-			this.lc = lc;
-			this.rc = rc;
+			for(Conv a: args) c.add(a);
+		}
+
+		public Unif(Type type, Conv... args) {
+			this.type = type;
+			for(Conv a: args) c.add(a);
 		}
 		
 	}

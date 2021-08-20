@@ -19,7 +19,7 @@ public class AST {
 	public  final int intData;
 	public  final double doubleData;
 	public  final Type type;
-	private final List<AST> children; // Privado para que a manipulação da lista seja controlável.
+	public 	final List<AST> children;
 
 	// Construtor completo para poder tornar todos os campos finais.
 	// Privado porque não queremos os dois campos 'data' preenchidos ao mesmo tempo.

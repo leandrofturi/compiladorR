@@ -2,6 +2,9 @@ package checker;
 
 import org.antlr.v4.runtime.Token;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import ast.AST;
 import parser.RParser;
 import parser.RParser.ExprContext;
@@ -25,6 +28,7 @@ import typing.Conv.Unif;
 import static typing.Conv.I2L;
 import static typing.Conv.D2L;
 
+import ast.NodeKind;
 import static ast.NodeKind.PROG_NODE;
 import static ast.NodeKind.VAR_DECL_NODE;
 import static ast.NodeKind.VAR_USE_NODE;
@@ -90,10 +94,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 
 	AST root; // Nó raiz da AST sendo construída.
 
-	private Type declaredType = null;		// Actual declared type.
-	private Token declaredVar = null;		// Actual declared variable.
-	private boolean assigned = false;		// Sinaliza que um assign ocorreu.
-
     // Testa se o dado token foi declarado antes.
     AST checkVar(Token token) {
     	String text = token.getText();
@@ -127,6 +127,12 @@ public class SemanticChecker extends RBaseVisitor<AST> {
     private static void typeError(int lineNo, String op, Type t1, Type t2) {
     	System.out.printf("SEMANTIC ERROR (%d): incompatible types for operator '%s', LHS is '%s' and RHS is '%s'.\n",
     			lineNo, op, t1.toString(), t2.toString());
+    	System.exit(1);
+    }
+
+	private static void typeError(int lineNo, String op) {
+    	System.out.printf("SEMANTIC ERROR (%d): incompatible types for operator '%s'.\n",
+    			lineNo, op);
     	System.exit(1);
     }
 
@@ -172,13 +178,18 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprINT(RParser.ExprINTContext ctx) {
-		declaredType = INTEGER_TYPE;
-		int intData = Integer.parseInt(ctx.getText());
+		// Encapsulamento da conversão
+		int intData = 0;
+		try {
+			intData = Integer.parseInt(ctx.getText().replace("L", ""));
+		} catch (NumberFormatException e) {
+			System.out.printf("SEMANTIC ERROR: Number Format Exception with %s.\n", ctx.getText());
+    		System.exit(1);
+		}
 		return new AST(INTEGER_VAL_NODE, intData, INTEGER_TYPE);
 	}
 
 	@Override public AST visitExprNA(RParser.ExprNAContext ctx) {
-		declaredType = DOUBLE_TYPE;
 		int intData = Integer.parseInt(ctx.getText());
 		return new AST(DOUBLE_VAL_NODE, intData, DOUBLE_TYPE);
 	}
@@ -193,8 +204,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprPexprP(RParser.ExprPexprPContext ctx) {
-		AST node = AST.newSubtree(PAR_NODE, NO_TYPE, visit(ctx.expr()));
-		return node;
+		return visit(ctx.expr());
 	}
 
 	@Override public AST visitExprbreak(RParser.ExprbreakContext ctx) {
@@ -232,29 +242,25 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 
 	@Override
 	public AST visitExprSTRING(RParser.ExprSTRINGContext ctx) {
-		declaredType = CHARACTER_TYPE;
 		int idx = st.addStr(ctx.STRING().getText());
 		return new AST(CHARACTER_VAL_NODE, idx, CHARACTER_TYPE);
 	}
 
 	@Override
 	public AST visitExprAssign(RParser.ExprAssignContext ctx) {
-		assigned = true;
-		AST node = AST.newSubtree(ASSIGN_NODE, NO_TYPE);
-		for (int i = 0; i < ctx.expr().size(); i++) {
-			AST child = visit(ctx.expr(i));
-    		node.addChild(child);
-    	}
-		if (assigned) {
-			newVar(declaredVar, declaredType);
-			assigned = false;
-			declaredVar = null;
+		AST var = visit(ctx.expr(0));
+    	AST value = visit(ctx.expr(1));
+
+		// Atualiza o tipo da variável
+		int idx = var.intData;
+		if (idx != -1) {
+			vt.updateTypeVar(idx, value.type);
 		}
+		AST node = AST.newSubtree(ASSIGN_NODE, NO_TYPE, var, value);
 		return node;
 	}
 
 	@Override public AST visitExprTRUE(RParser.ExprTRUEContext ctx) {
-		declaredType = LOGICAL_TYPE;
 		return new AST(LOGICAL_VAL_NODE, 1, LOGICAL_TYPE);
 	}
 
@@ -286,7 +292,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprInf(RParser.ExprInfContext ctx) {
-		declaredType = DOUBLE_TYPE;
 		return new AST(DOUBLE_VAL_NODE, Double.POSITIVE_INFINITY, DOUBLE_TYPE);
 	}
 
@@ -308,11 +313,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		return node;
 	}
 
-	@Override public AST visitExprHEX(RParser.ExprHEXContext ctx) {
-		declaredType = DOUBLE_TYPE;
-		double doubleData = Double.parseDouble(ctx.getText());
-		return new AST(DOUBLE_VAL_NODE, doubleData, DOUBLE_TYPE);
-	}
+	@Override public AST visitExprHEX(RParser.ExprHEXContext ctx) {  return visitChildren(ctx); }
 
 	@Override public AST visitExprSign(RParser.ExprSignContext ctx) {
 		AST node = AST.newSubtree(SIGN_NODE, NO_TYPE, visit(ctx.expr()));
@@ -352,7 +353,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprFALSE(RParser.ExprFALSEContext ctx) {
-		declaredType = LOGICAL_TYPE;
 		return new AST(LOGICAL_VAL_NODE, 0, LOGICAL_TYPE);
 	}
 
@@ -385,8 +385,8 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		}
 
 		// Cria os nós de conversão que forem necessários segundo a estrutura de conversão.
-		l = Conv.createConvNode(unif.lc, l);
-		r = Conv.createConvNode(unif.rc, r);
+		l = Conv.createConvNode(unif.c.get(0), l);
+		r = Conv.createConvNode(unif.c.get(1), r);
 
 		// Olha qual é o operador e cria o nó correspondente na AST.
 		if (ctx.op.getText().equals("+")) {
@@ -399,8 +399,14 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprFLOAT(RParser.ExprFLOATContext ctx) {
-		declaredType = DOUBLE_TYPE;
-		double doubleData = Double.parseDouble(ctx.getText());
+		// Encapsulamento da conversão
+		double doubleData = 0.0;
+		try {
+			doubleData = Double.parseDouble(ctx.getText());
+		} catch (NumberFormatException e) {
+			System.out.printf("SEMANTIC ERROR: Number Format Exception with %s.\n", ctx.getText());
+    		System.exit(1);
+		}
 		return new AST(DOUBLE_VAL_NODE, doubleData, DOUBLE_TYPE);
 	}
 
@@ -421,8 +427,8 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		}
 
 		// Cria os nós de conversão que forem necessários segundo a estrutura de conversão.
-		l = Conv.createConvNode(unif.lc, l);
-		r = Conv.createConvNode(unif.rc, r);
+		l = Conv.createConvNode(unif.c.get(0), l);
+		r = Conv.createConvNode(unif.c.get(1), r);
 
 		// Olha qual é o operador e cria o nó correspondente na AST.
 		if (ctx.op.getText().equals("+")) {
@@ -438,7 +444,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprNULL(RParser.ExprNULLContext ctx) {
-		declaredType = NULL_TYPE;
 		return new AST(NULL_VAL_NODE, 0, NULL_TYPE);
 	}
 
@@ -457,8 +462,8 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		}
 
 		// Cria os nós de conversão que forem necessários segundo a estrutura de conversão.
-		l = Conv.createConvNode(unif.lc, l);
-		r = Conv.createConvNode(unif.rc, r);
+		l = Conv.createConvNode(unif.c.get(0), l);
+		r = Conv.createConvNode(unif.c.get(1), r);
 
 		// Olha qual é o operador e cria o nó correspondente na AST.
 		if (ctx.op.getText().equals("*")) {
@@ -479,16 +484,53 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprCall(RParser.ExprCallContext ctx) {
-		AST node = AST.newSubtree(CALL_NODE, NO_TYPE, visit(ctx.expr()), visit(ctx.sublist()));
-		return node;
+		AST fun = visit(ctx.expr());
+		AST values = visit(ctx.sublist());
+
+		// lookup no que está sendo passado como argumento
+		if((values.getChildSize() > 0) && 
+		   ((ctx.expr().getText().equals("c")) || (ctx.expr().getText().equals("list")))) {
+
+			// Obtem todos os tipos
+			Type head = values.getChild(0).type;
+			List<Integer> types = new ArrayList<>();
+			for (int i = 0; i < values.getChildSize(); i++) {
+				types.add(values.getChild(i).type.ordinal());
+			}
+
+			// Faz a unificação dos tipos para determinar o tipo resultante.
+			Unif unif = head.unifyArithmetic(types);
+			NodeKind nodeResult = CALL_NODE;
+			if (unif.type == LOGICAL_TYPE) {
+				nodeResult = LOGICAL_VAL_NODE;
+			} else if (unif.type == INTEGER_TYPE) {
+				nodeResult = INTEGER_VAL_NODE;
+			} else if (unif.type == DOUBLE_TYPE) {
+				nodeResult = DOUBLE_VAL_NODE;
+			}
+
+			if (unif.type == NO_TYPE) {
+				System.out.printf("SEMANTIC ERROR: incompatible types for operator '%s'.\n", ctx.expr().getText());
+				System.exit(1);
+			}
+
+			// Cria os nós de conversão que forem necessários segundo a estrutura de conversão.
+			for (int i = 0; i < unif.c.size(); i++) {
+				values.children.set(i, Conv.createConvNode(unif.c.get(i), values.getChild(i)));
+			}
+
+			// Olha qual é o operador e cria o nó correspondente na AST.
+			if (ctx.expr().getText().equals("c")) {
+				return AST.newSubtree(nodeResult, NO_TYPE, fun, values);
+			} else if (ctx.expr().getText().equals("list")) {
+				return AST.newSubtree(LIST_VAL_NODE, NO_TYPE, fun, values);
+			}
+		}
+		return AST.newSubtree(CALL_NODE, NO_TYPE, fun, values);
 	}
 
 	@Override
 	public AST visitExprID(RParser.ExprIDContext ctx) {
-		if (declaredVar == null) {
-			declaredVar = ctx.ID().getSymbol();
-		}
-		declaredType = CLOSURE_TYPE;
 		return newVar(ctx.ID().getSymbol(), SYMBOL_TYPE);
 	}
 
@@ -502,7 +544,6 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprNaN(RParser.ExprNaNContext ctx) {
-		declaredType = NULL_TYPE;
 		return new AST(DOUBLE_VAL_NODE, Double.NaN, DOUBLE_TYPE);
 	}
 
@@ -562,8 +603,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitSubExpr(RParser.SubExprContext ctx) {
-		AST node = AST.newSubtree(SUBEXPR_NODE, NO_TYPE, visit(ctx.expr()));
-		return node;
+		return visit(ctx.expr());
 	 }
 
 	@Override public AST visitSubID(RParser.SubIDContext ctx) {

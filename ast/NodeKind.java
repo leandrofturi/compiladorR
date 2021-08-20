@@ -69,7 +69,7 @@ public enum NodeKind {
 	},
 	GT_NODE {
 		public String toString() {
-            return "<";
+            return ">";
         }
 	},
 	PLUS_NODE {
