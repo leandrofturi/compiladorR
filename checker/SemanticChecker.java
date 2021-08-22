@@ -94,6 +94,8 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 
 	AST root; // Nó raiz da AST sendo construída.
 
+	private String assignOp = ""; // Indica que um assign ocorreu
+
     // Testa se o dado token foi declarado antes.
     AST checkVar(Token token) {
     	String text = token.getText();
@@ -190,8 +192,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 	}
 
 	@Override public AST visitExprNA(RParser.ExprNAContext ctx) {
-		int intData = Integer.parseInt(ctx.getText());
-		return new AST(DOUBLE_VAL_NODE, intData, DOUBLE_TYPE);
+		return new AST(DOUBLE_VAL_NODE, 0.0, DOUBLE_TYPE);
 	}
 
 	@Override public AST visitExprValuePkg(RParser.ExprValuePkgContext ctx) {
@@ -248,6 +249,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 
 	@Override
 	public AST visitExprAssign(RParser.ExprAssignContext ctx) {
+		assignOp = ctx.op.getText();
 		AST var = visit(ctx.expr(0));
     	AST value = visit(ctx.expr(1));
 
@@ -487,9 +489,20 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		AST fun = visit(ctx.expr());
 		AST values = visit(ctx.sublist());
 
-		// lookup no que está sendo passado como argumento
-		if((values.getChildSize() > 0) && 
-		   ((ctx.expr().getText().equals("c")) || (ctx.expr().getText().equals("list")))) {
+		String ass = null;
+		String var = null;
+		// Lookup no que está sendo passado como argumento
+		if(assignOp == "") {
+			ass = ctx.expr().getText();
+		} else {
+			// Obter apenas a chamada: c ou list
+			ass = ctx.expr().getText().replaceAll("^[^"+ assignOp +"]*" + assignOp + "\\s*", "");
+			// Obter o nome da variável
+			var = ctx.expr().getText().replaceAll("\\s*"+ assignOp +".*$", "");
+		}
+		assignOp = "";
+		
+		if((values.getChildSize() > 0) && ((ass.equals("c")) || (ass.equals("list")))) {
 
 			// Obtem todos os tipos
 			Type head = values.getChild(0).type;
@@ -509,9 +522,15 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 				nodeResult = DOUBLE_VAL_NODE;
 			}
 
-			if (unif.type == NO_TYPE) {
-				System.out.printf("SEMANTIC ERROR: incompatible types for operator '%s'.\n", ctx.expr().getText());
-				System.exit(1);
+			// Atualiza o tipo da variável
+			if(var != null) {
+				int idx = vt.lookupVar(var);
+				if (idx != -1) {
+					vt.updateTypeVar(idx, unif.type);
+				} else {
+					System.out.printf("SEMANTIC ERROR: variable '%s' was not declared.\n", var);
+					System.exit(1);
+				}
 			}
 
 			// Cria os nós de conversão que forem necessários segundo a estrutura de conversão.
@@ -520,9 +539,9 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 			}
 
 			// Olha qual é o operador e cria o nó correspondente na AST.
-			if (ctx.expr().getText().equals("c")) {
+			if (ass.equals("c")) {
 				return AST.newSubtree(nodeResult, NO_TYPE, fun, values);
-			} else if (ctx.expr().getText().equals("list")) {
+			} else if (ass.equals("list")) {
 				return AST.newSubtree(LIST_VAL_NODE, NO_TYPE, fun, values);
 			}
 		}

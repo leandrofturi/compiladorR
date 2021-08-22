@@ -65,7 +65,7 @@ expr:
     |   expr ('|'|'||') expr                                        # exprOr
     |   '~' expr                                                    # exprNotFormula
     |   expr '~' expr                                               # exprEFormulaE
-    |   expr ('<-'|'<<-'|'='|'->'|'->>'|':=') expr                  # exprAssign
+    |   expr op=('<-'|'<<-'|'='|'->'|'->>'|':=') expr               # exprAssign
     |   'function' '(' formlist? ')' expr                           # exprDefine // define function
     |   expr '(' sublist ')'                                        # exprCall // call function
     |   '{' exprlist '}'                                            # exprCompound // compound statement

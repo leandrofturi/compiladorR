@@ -50,15 +50,15 @@ class(-Inf)	# "numeric"
 class(NaN) # "numeric"
 # You can do arithmetic on two vectors with length greater than 1,
 # so long as the larger vector's length is an integer multiple of the smaller
-c(1,2,3) + c(1,2,3) # 2 4 6
+# c(1,2,3) + c(1,2,3) # 2 4 6
 # Since a single number is a vector of length one, scalars are applied 
 # elementwise to vectors
-(4 * c(1,2,3) - 2) / 2 # 1 3 5
+# (4 * c(1,2,3) - 2) / 2 # 1 3 5
 # Except for scalars, use caution when performing arithmetic on vectors with 
 # different lengths. Although it can be done, 
-c(1,2,3,1,2,3) * c(1,2) # 1 4 3 2 2 6
+# c(1,2,3,1,2,3) * c(1,2) # 1 4 3 2 2 6
 # Matching lengths is better practice and easier to read
-c(1,2,3,1,2,3) * c(1,2,1,2,1,2) 
+# c(1,2,3,1,2,3) * c(1,2,1,2,1,2) 
 
 # CHARACTERS
 # There's no difference between strings and characters in R
@@ -98,13 +98,13 @@ TRUE | FALSE	# TRUE
 # AND
 TRUE & FALSE	# FALSE
 # Applying | and & to vectors returns elementwise logic operations
-c(TRUE,FALSE,FALSE) | c(FALSE,TRUE,FALSE) # TRUE TRUE FALSE
-c(TRUE,FALSE,TRUE) & c(FALSE,TRUE,TRUE) # FALSE FALSE TRUE
+# c(TRUE,FALSE,FALSE) | c(FALSE,TRUE,FALSE) # TRUE TRUE FALSE
+# c(TRUE,FALSE,TRUE) & c(FALSE,TRUE,TRUE) # FALSE FALSE TRUE
 # You can test if x is TRUE
 isTRUE(TRUE)	# TRUE
 # Here we get a logical vector with many elements:
-c('Z', 'o', 'r', 'r', 'o') == "Zorro" # FALSE FALSE FALSE FALSE FALSE
-c('Z', 'o', 'r', 'r', 'o') == "Z" # TRUE FALSE FALSE FALSE FALSE
+# c('Z', 'o', 'r', 'r', 'o') == "Zorro" # FALSE FALSE FALSE FALSE FALSE
+#c('Z', 'o', 'r', 'r', 'o') == "Z" # TRUE FALSE FALSE FALSE FALSE
 
 # FACTORS
 # The factor class is for categorical data

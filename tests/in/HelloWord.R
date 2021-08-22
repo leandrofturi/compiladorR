@@ -1,1 +1,2 @@
-c(1,2,3)
+myString <- "Hellor word"
+print(myString)

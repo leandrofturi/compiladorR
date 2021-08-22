@@ -353,6 +353,7 @@ public class RParser extends Parser {
 		}
 	}
 	public static class ExprAssignContext extends ExprContext {
+		public Token op;
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
@@ -1256,9 +1257,10 @@ public class RParser extends Parser {
 						setState(128);
 						if (!(precpred(_ctx, 25))) throw new FailedPredicateException(this, "precpred(_ctx, 25)");
 						setState(129);
+						((ExprAssignContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__26) | (1L << T__27) | (1L << T__28) | (1L << T__29) | (1L << T__30) | (1L << T__31))) != 0)) ) {
-						_errHandler.recoverInline(this);
+							((ExprAssignContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;

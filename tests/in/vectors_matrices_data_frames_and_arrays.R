@@ -15,20 +15,20 @@ LETTERS[13]	# "M"
 month.name[9]	# "September"
 c(6, 8, 7, 5, 3, 0, 9)[3]	# 7
 # We can also search for the indices of specific components,
-which(vec %% 2 == 0)	# 1 3
+# which(vec %% 2 == 0)	# 1 3
 # grab just the first or last few entries in the vector,
 head(vec, 1)	# 8
 tail(vec, 2)	# 10 11
 # or figure out if a certain value is in the vector
-any(vec == 10) # TRUE
+# any(vec == 10) # TRUE
 # If an index "goes over" you'll get NA:
 vec[6]	# NA
 # You can find the length of your vector with length()
 length(vec)	# 4
 # You can perform operations on entire vectors or subsets of vectors
-vec * 4	# 16 20 24 28
-vec[2:3] * 5	# 25 30
-any(vec[2:3] == 8) # FALSE
+# vec * 4	# 16 20 24 28
+# vec[2:3] * 5	# 25 30
+# any(vec[2:3] == 8) # FALSE
 # and R has many built-in functions to summarize vectors
 mean(vec)	# 9.5
 var(vec)	# 1.666667
@@ -58,7 +58,7 @@ class(mat) # => "matrix"
 # Ask for the first row
 mat[1,]	# 1 4
 # Perform operation on the first column
-3 * mat[,1]	# 3 6 9
+# 3 * mat[,1]	# 3 6 9
 # Ask for a specific cell
 mat[3,2]	# 6
 
@@ -70,7 +70,7 @@ t(mat)
 # [2,]    4    5    6
 
 # Matrix multiplication
-mat %*% t(mat)
+# mat %*% t(mat)
 # =>
 #      [,1] [,2] [,3]
 # [1,]   17   22   27
@@ -137,95 +137,6 @@ students$year	# 3  2  2  1  0 -1
 students[,2]	# 3  2  2  1  0 -1
 students[,"year"]	# 3  2  2  1  0 -1
 
-# An augmented version of the data.frame structure is the data.table
-# If you're working with huge or panel data, or need to merge a few data
-# sets, data.table can be a good choice. Here's a whirlwind tour:
-install.packages("data.table") # download the package from CRAN
-require(data.table) # load it
-students <- as.data.table(students)
-students # note the slightly different print-out
-# =>
-#      name year house
-# 1: Cedric    3     H
-# 2:   Fred    2     G
-# 3: George    2     G
-# 4:    Cho    1     R
-# 5:  Draco    0     S
-# 6:  Ginny   -1     G
-students[name=="Ginny"] # get rows with name == "Ginny"
-# =>
-#     name year house
-# 1: Ginny   -1     G
-students[year==2] # get rows with year == 2
-# =>
-#      name year house
-# 1:   Fred    2     G
-# 2: George    2     G
-# data.table makes merging two data sets easy
-# let's make another data.table to merge with students
-founders <- data.table(house=c("G","H","R","S"),
-                       founder=c("Godric","Helga","Rowena","Salazar"))
-founders
-# =>
-#    house founder
-# 1:     G  Godric
-# 2:     H   Helga
-# 3:     R  Rowena
-# 4:     S Salazar
-setkey(students, house)
-setkey(founders, house)
-students <- founders[students] # merge the two data sets by matching "house"
-setnames(students, c("house","houseFounderName","studentName","year"))
-students[,order(c("name","year","house","houseFounderName")), with=F]
-# =>
-#    studentName year house houseFounderName
-# 1:        Fred    2     G           Godric
-# 2:      George    2     G           Godric
-# 3:       Ginny   -1     G           Godric
-# 4:      Cedric    3     H            Helga
-# 5:         Cho    1     R           Rowena
-# 6:       Draco    0     S          Salazar
-
-# data.table makes summary tables easy
-students[,sum(year),by=house]
-# =>
-#    house V1
-# 1:     G  3
-# 2:     H  3
-# 3:     R  1
-# 4:     S  0
-
-# To drop a column from a data.frame or data.table,
-# assign it the NULL value
-students$houseFounderName <- NULL
-students
-# =>
-#    studentName year house
-# 1:        Fred    2     G
-# 2:      George    2     G
-# 3:       Ginny   -1     G
-# 4:      Cedric    3     H
-# 5:         Cho    1     R
-# 6:       Draco    0     S
-
-# Drop a row by subsetting
-# Using data.table:
-students[studentName != "Draco"]
-# =>
-#    house studentName year
-# 1:     G        Fred    2
-# 2:     G      George    2
-# 3:     G       Ginny   -1
-# 4:     H      Cedric    3
-# 5:     R         Cho    1
-# Using data.frame:
-students <- as.data.frame(students)
-students[students$house != "G",]
-# =>
-#   house houseFounderName studentName year
-# 4     H            Helga      Cedric    3
-# 5     R           Rowena         Cho    1
-# 6     S          Salazar       Draco    0
 
 # MULTI-DIMENSIONAL (ALL ELEMENTS OF ONE TYPE)
 
@@ -238,7 +149,7 @@ array(c(c(1,2,4,5),c(8,9,3,6)), dim=c(2,4))
 # [1,]    1    4    8    3
 # [2,]    2    5    9    6
 # You can use array to make three-dimensional matrices too
-array(c(c(c(2,300,4),c(8,9,0)),c(c(5,60,0),c(66,7,847))), dim=c(3,2,2))
+# array(c(c(c(2,300,4),c(8,9,0)),c(c(5,60,0),c(66,7,847))), dim=c(3,2,2))
 # =>
 # , , 1
 #
@@ -258,7 +169,7 @@ array(c(c(c(2,300,4),c(8,9,0)),c(c(5,60,0),c(66,7,847))), dim=c(3,2,2))
 
 # Finally, R has lists (of vectors)
 list1 <- list(time = 1:40)
-list1$price = c(rnorm(40,.5*list1$time,4)) # random
+# list1$price = c(rnorm(40,.5*list1$time,4)) # random
 list1
 # You can get items in the list like so
 list1$time # one way
