@@ -1,4 +1,7 @@
 # Compilador de Linguagem R 
+
+Leandro Furlam e Isuflânia Ribeiro
+
 ## Árvore de Sintaxe Abstrata (AST)
 
 Após termos em mãos o Lexer e o Parser do CP1, construímos a AST seguindo como base os exemplos dos laboratórios anteriores e a ferramenta ANTLR. Foram realizadas algumas simplificações, entretanto todos os aspectos solicitados na descrição do CP2 foram cobertos. Também destaca-se que nenhuma mudança significativa foi realizada na gramática.
