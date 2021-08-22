@@ -502,7 +502,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		}
 		assignOp = "";
 		
-		if((values.getChildSize() > 0) && ((ass.equals("c")) || (ass.equals("list")))) {
+		if((values.getChildSize() > 0) && ass.equals("c")) {
 
 			// Obtem todos os tipos
 			Type head = values.getChild(0).type;
@@ -539,11 +539,20 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 			}
 
 			// Olha qual é o operador e cria o nó correspondente na AST.
-			if (ass.equals("c")) {
-				return AST.newSubtree(nodeResult, NO_TYPE, fun, values);
-			} else if (ass.equals("list")) {
-				return AST.newSubtree(LIST_VAL_NODE, NO_TYPE, fun, values);
+			return AST.newSubtree(nodeResult, NO_TYPE, fun, values);
+		} else if((values.getChildSize() > 0) && ass.equals("list")) {
+			// Atualiza o tipo da variável
+			if(var != null) {
+				int idx = vt.lookupVar(var);
+				if (idx != -1) {
+					vt.updateTypeVar(idx, LIST_TYPE);
+				} else {
+					System.out.printf("SEMANTIC ERROR: variable '%s' was not declared.\n", var);
+					System.exit(1);
+				}
 			}
+
+			return AST.newSubtree(LIST_VAL_NODE, NO_TYPE, fun, values);
 		}
 		return AST.newSubtree(CALL_NODE, NO_TYPE, fun, values);
 	}

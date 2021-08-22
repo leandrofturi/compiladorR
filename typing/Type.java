@@ -106,13 +106,6 @@ public enum Type {
 		public String toString() {
             return "no_type";
         }
-	},
-
-	// Simplificação da álgebra vetorial
-	VECTOR_TYPE {
-		public String toString() {
-            return "list";
-        }
 	};
 
 	public Unif unifyArithmetic(Type... args) {
