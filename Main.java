@@ -66,6 +66,10 @@ public class Main {
 		// Executa o gerador de código.
 		CodeGen codeGen = new CodeGen(checker.st, checker.vt);
 		codeGen.execute(checker.getAST());
+
+		String filename = System.getenv("FILE").replaceAll(".R$", ".asm");
+		codeGen.dump2File(filename);
+
 	}
 
 }

@@ -1,11 +1,17 @@
 package code;
 
+import java.io.PrintWriter;
+import java.io.IOException;
+
 import static code.Instruction.INSTR_MEM_SIZE;
 
 import static code.OpCode.SYSCALL;
 import static code.OpCode.LI;
 import static code.OpCode.LA;
+import static code.OpCode.ADD;
+import static code.OpCode.SW;
 import static code.OpCode.ASCII;
+import static code.OpCode.WORD;
 
 import static typing.Type.LOGICAL_TYPE;
 import static typing.Type.INTEGER_TYPE;
@@ -18,7 +24,7 @@ import tables.VarTable;
 import typing.Type;
 
 
-public final class CodeGen extends ASTBaseVisitor<Integer> {
+public final class CodeGen extends ASTBaseVisitor<String> {
 
 	private final Instruction code[]; // user program code
     private final Instruction pointer[]; // pointers
@@ -33,6 +39,7 @@ public final class CodeGen extends ASTBaseVisitor<Integer> {
 	// Número de registradores temporários já utilizados.
 	private static int valueRegsCount;
 	private static int argRegsCount;
+    private static int tempRegsCount;
 	
 	public CodeGen(StrTable st, VarTable vt) {
 		this.code = new Instruction[INSTR_MEM_SIZE];
@@ -48,9 +55,44 @@ public final class CodeGen extends ASTBaseVisitor<Integer> {
         nextPointer = 0;
 		valueRegsCount = 0;
 		argRegsCount = 0;
+        tempRegsCount = 0;
 	    visit(root);
-	    dumpProgram();
+        dumpProgram();
 	}
+
+    public void dump2File(String filename) {
+        try
+        {
+            PrintWriter writer = new PrintWriter(filename, "UTF-8");
+
+            writer.println("# " + filename + " in MIPS assembly");
+            writer.println("\t\t" + ".text");
+            writer.println();
+            writer.println("\t\t" + ".globl main");
+            writer.println();
+            writer.println("main:");
+            for (int addr = 0; addr < nextInstr; addr++) {
+                writer.println(String.format("\t\t%s", code[addr].toString()));
+            }
+            writer.println();
+            writer.println("\t\t" + ".data");
+            writer.println();
+            for (int addr = 0; addr < nextPointer; addr++) {
+                writer.println(String.format("pt_%d:\t%s", addr, pointer[addr].toString()));
+            }
+
+            writer.close();
+        }
+        catch (IOException ex)  
+        {
+            System.out.printf("IO ERROR: file '%s' was wrong.\n", filename);
+    		System.exit(1);
+        }
+    }
+
+    private String str(int x) {
+        return Integer.toString(x);
+    }
 
 
 	// ----------------------------------------------------------------------------
@@ -78,15 +120,15 @@ public final class CodeGen extends ASTBaseVisitor<Integer> {
 	}
 
     private void emit(OpCode op) {
-		emit(op, "", "", "");
+		emit(op, null, null, null);
 	}
 	
 	private void emit(OpCode op, String o1) {
-		emit(op, o1, "", "");
+		emit(op, o1, null, null);
 	}
 	
 	private void emit(OpCode op, String o1, String o2) {
-		emit(op, o1, o2, "");
+		emit(op, o1, o2, null);
     }
 
     // ----------------------------------------------------------------------------
@@ -101,15 +143,15 @@ public final class CodeGen extends ASTBaseVisitor<Integer> {
 	}
 
 	private int pointer(OpCode op) {
-		return pointer(op, "", "", "");
+		return pointer(op, null, null, null);
 	}
 
 	private int pointer(OpCode op, String o1) {
-		return pointer(op, o1, "", "");
+		return pointer(op, o1, null, null);
 	}
 
 	private int pointer(OpCode op, String o1, String o2) {
-		return pointer(op, o1, o2, "");
+		return pointer(op, o1, o2, null);
 	}
 
     // ----------------------------------------------------------------------------
@@ -127,8 +169,14 @@ public final class CodeGen extends ASTBaseVisitor<Integer> {
 	}
     
 	private String newArgReg() { // (arguments) First four parameters for subroutine
-        String s = String.format("$a%d", valueRegsCount);
+        String s = String.format("$a%d", argRegsCount);
 		argRegsCount++;
+        return s;
+	}
+
+    private String newTempReg() { // Temporary variables
+        String s = String.format("$t%d", tempRegsCount);
+		tempRegsCount++;
         return s;
 	}
 
@@ -136,148 +184,160 @@ public final class CodeGen extends ASTBaseVisitor<Integer> {
 	// AST Traversal --------------------------------------------------------------
 
     @Override
-	protected Integer visitVarDecl(AST node) {
-        return -1;
+	protected String visitVarDecl(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitVarUse(AST node) {
-        return -1;
+	protected String visitVarUse(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitProg(AST node) {
+	protected String visitProg(AST node) {
         System.out.println("Prog");
 
+        String r = newValueReg();
     	for (int i = 0; i < node.getChildSize(); i++) {
     		visit(node.getChild(i));
     	}
-        emit(LI, getValueReg(0), "10"); // Code for syscall: exit
+        emit(LI, r, "10"); // Code for syscall: exit
         emit(SYSCALL);
 
-        return -1;
+        return null;
     }
 
     @Override
-	protected Integer visitExprSubSublist(AST node) {
+	protected String visitExprSubSublist(AST node) {
         for (int i = 0; i < node.getChildSize(); i++) {
     		visit(node.getChild(i));
     	}
 
-        return -1;
+        return null;
     }
 
     @Override
-	protected Integer visitExprSublist(AST node) {
+	protected String visitExprSublist(AST node) {
         for (int i = 0; i < node.getChildSize(); i++) {
     		visit(node.getChild(i));
     	}
 
-        return -1;
+        return null;
     }
 
     @Override
-	protected Integer visitValuePkg(AST node) {
-        return -1;
+	protected String visitValuePkg(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitExtract(AST node) {
-        return -1;
+	protected String visitExtract(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitAssocRight(AST node) {
-        return -1;
+	protected String visitAssocRight(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitSign(AST node) {
-        return -1;
+	protected String visitSign(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitNamespace(AST node) {
-        return -1;
+	protected String visitNamespace(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitWrappedin(AST node) {
-        return -1;
+	protected String visitWrappedin(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitEq(AST node) {
-        return -1;
+	protected String visitEq(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitLt(AST node) {
-        return -1;
+	protected String visitLt(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitGt(AST node) {
-        return -1;
+	protected String visitGt(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitPlus(AST node) {
-        return -1;
+	protected String visitPlus(AST node) {
+        String x = null;
+	    String y = visit(node.getChild(0));
+	    String z = visit(node.getChild(1));
+
+
+	    x = newTempReg();
+	    emit(ADD, x, y, z);
+
+        int pt = pointer(WORD, "0");
+        emit(SW, x, String.format("pt_%d", pt));
+
+	    return x;
     }
 
     @Override
-	protected Integer visitMinus(AST node) {
-        return -1;
+	protected String visitMinus(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitTimes(AST node) {
-        return -1;
+	protected String visitTimes(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitOver(AST node) {
-        return -1;
+	protected String visitOver(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitNot(AST node) {
-        return -1;
+	protected String visitNot(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitAnd(AST node) {
-        return -1;
+	protected String visitAnd(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitOr(AST node) {
-        return -1;
+	protected String visitOr(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitNotFormula(AST node) {
-        return -1;
+	protected String visitNotFormula(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitFormula(AST node) {
-        return -1;
+	protected String visitFormula(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitAssign(AST node) {
-        return -1;
+	protected String visitAssign(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitDefine(AST node) {
-        return -1;
+	protected String visitDefine(AST node) {
+        return null;
     }
 
     @Override
-	protected Integer visitCall(AST node) {
+	protected String visitCall(AST node) {
         System.out.println("Call");
 
         AST symbol = node.getChild(0);
@@ -285,193 +345,197 @@ public final class CodeGen extends ASTBaseVisitor<Integer> {
         
         String fun = vt.getName(symbol.intData);
         if (fun.equals("print")) {
-            emit(LI, newValueReg(), "4");  // Code for syscall: print_string
+            emit(LI, getValueReg(0), "4");  // Code for syscall: print_string
         }
-		int values = visit(args);
+		String values = visit(args);
         emit(SYSCALL);
 
-        return -1;
+        return null;
     }
 
     @Override
-    protected Integer visitCompound(AST node) {
-        return -1;
+    protected String visitCompound(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitIf(AST node) {
-        return -1;
+    protected String visitIf(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitIfElse(AST node) {
-        return -1;
+    protected String visitIfElse(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitFor(AST node) {
-        return -1;
+    protected String visitFor(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitWhile(AST node) {
-        return -1;
+    protected String visitWhile(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitRepeat(AST node) {
-        return -1;
+    protected String visitRepeat(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitHelp(AST node) {
-        return -1;
+    protected String visitHelp(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitNext(AST node) {
-        return -1;
+    protected String visitNext(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitBreak(AST node) {
-        return -1;
+    protected String visitBreak(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitPar(AST node) {
-        return -1;
+    protected String visitPar(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitId(AST node) {
+    protected String visitId(AST node) {
         System.out.println("ID");
         System.out.println(node.type);
-        return -1;
+        return null;
     }
 
     @Override
-    protected Integer visitNull(AST node) {
-        return -1;
+    protected String visitNull(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitLogical(AST node) {
-        return -1;
+    protected String visitLogical(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitInteger(AST node) {
-        return -1;
+    protected String visitInteger(AST node) {
+	    int c = node.intData;
+        String x = newTempReg();
+	    emit(LI, x, str(c));
+	    return x;
     }
 
     @Override
-    protected Integer visitDouble(AST node) {
-        return -1;
+    protected String visitDouble(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitComplex(AST node) {
-        return -1;
+    protected String visitComplex(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitCharacter(AST node) {
+    protected String visitCharacter(AST node) {
         System.out.println("Character");
 
         int pt = pointer(ASCII, st.getName(node.intData));
-	    emit(LA, newArgReg(), String.format("pt_%d", pt));
+        String x = newArgReg();
+	    emit(LA, x, String.format("pt_%d", pt));
 
-	    return argRegsCount-1;
+	    return x;
     }
 
     @Override
-    protected Integer visitVararg(AST node) {
-        return -1;
+    protected String visitVararg(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitPoint(AST node) {
-        return -1;
+    protected String visitPoint(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitEmpty(AST node) {
-        return -1;
+    protected String visitEmpty(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitList(AST node) {
-        return -1;
+    protected String visitList(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitSublist(AST node) {
+    protected String visitSublist(AST node) {
         for (int i = 0; i < node.getChildSize(); i++) {
     		visit(node.getChild(i));
     	}
 
-        return -1;
+        return null;
     }
 
     @Override
-    protected Integer visitExprList(AST node) {
-        return -1;
+    protected String visitExprList(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitFormList(AST node) {
-        return -1;
+    protected String visitFormList(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitFormAssign(AST node) {
-        return -1;
+    protected String visitFormAssign(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitSubExpr(AST node) {
-        return -1;
+    protected String visitSubExpr(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitSubAssign(AST node) {
-        return -1;
+    protected String visitSubAssign(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitSubAssignCharacter(AST node) {
-        return -1;
+    protected String visitSubAssignCharacter(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitSubAssignNull(AST node) {
-        return -1;
+    protected String visitSubAssignNull(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitL2I(AST node) {
-        return -1;
+    protected String visitL2I(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitL2D(AST node) {
-        return -1;
+    protected String visitL2D(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitI2D(AST node) {
-        return -1;
+    protected String visitI2D(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitI2L(AST node) {
-        return -1;
+    protected String visitI2L(AST node) {
+        return null;
     }
 
     @Override
-    protected Integer visitD2L(AST node) {
-        return -1;
+    protected String visitD2L(AST node) {
+        return null;
     }
 
 }

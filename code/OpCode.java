@@ -7,8 +7,12 @@ public enum OpCode {
 	
     LI("li", 2),            // (Pseudo-instruction) Loads immediate value into register
     LA("la", 2),            // (Pseudo-instruction) Loads computed address of label (not its contents) into register
-    
-    ASCII(".asciiz", 1);
+    ADD("add", 3),
+	SW("sw", 2),			// Copy from register to memory
+
+    ASCII(".asciiz", 1),	// Store the ASCII string str in memory and null-terminate it
+							// Strings are in double-quotes, i.e. "Computer Science"
+	WORD(".word", 1);		// Store n 32-bit values in successive memory words
 	
 	public final String name;
 	public final int opCount;
