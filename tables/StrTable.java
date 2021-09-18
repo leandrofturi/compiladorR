@@ -7,6 +7,7 @@ import java.util.Formatter;
 public final class StrTable extends ArrayList<String>{
 
     public int addStr(String s) {
+		s = s.substring(0, s.length() - 1) + "\\n\"";
 		for (int i = 0; i < this.size(); i++) {
 			if (this.get(i).equals(s)) {
 				return i;
@@ -14,6 +15,10 @@ public final class StrTable extends ArrayList<String>{
 		}
 		super.add(s);
 		return super.size()-1;
+	}
+
+	public String getName(int i) {
+		return super.get(i);
 	}
 
 	public String toString() {

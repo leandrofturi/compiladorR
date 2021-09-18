@@ -1,2 +1,1 @@
-myString <- "Hellor word"
-print(myString)
+print("Hellor word")

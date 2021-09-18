@@ -89,8 +89,8 @@ import static ast.NodeKind.EMPTY_NODE;
 // Analisador semântico de R implementado como um visitor da ParseTree do ANTLR.
 public class SemanticChecker extends RBaseVisitor<AST> {
 
-	private StrTable st = new StrTable();   // Tabela de strings.
-    private VarTable vt = new VarTable();   // Tabela de variáveis.
+	public StrTable st = new StrTable();   // Tabela de strings.
+    public VarTable vt = new VarTable();   // Tabela de variáveis.
 
 	AST root; // Nó raiz da AST sendo construída.
 
@@ -148,7 +148,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 
     // ----------------------------------------------------------------------------
     // Exibe o conteúdo das tabelas em stdout.
-    void printTables() {
+    public void printTables() {
         System.out.print("\n\n");
         System.out.print(st);
         System.out.print("\n\n");
@@ -157,8 +157,13 @@ public class SemanticChecker extends RBaseVisitor<AST> {
     }
 
     // Exibe a AST no formato DOT em stderr.
-    void printAST() {
+    public void printAST() {
     	AST.printDot(root, vt);
+    }
+
+	// Retorna a AST construída ao final da análise.
+    public AST getAST() {
+    	return this.root;
     }
 
     // ----------------------------------------------------------------------------
