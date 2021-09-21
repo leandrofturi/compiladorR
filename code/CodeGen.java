@@ -5,13 +5,30 @@ import java.io.IOException;
 
 import static code.Instruction.INSTR_MEM_SIZE;
 
-import static code.OpCode.SYSCALL;
-import static code.OpCode.LI;
-import static code.OpCode.LA;
 import static code.OpCode.ADD;
+import static code.OpCode.ADDD;
+import static code.OpCode.SUB;
+import static code.OpCode.SUBD;
+import static code.OpCode.MUL;
+import static code.OpCode.MULD;
+import static code.OpCode.DIV;
+import static code.OpCode.DIVD;
+import static code.OpCode.BIT_AND;
+import static code.OpCode.BIT_OR;
+import static code.OpCode.LW;
+import static code.OpCode.LD;
 import static code.OpCode.SW;
+import static code.OpCode.SD;
+import static code.OpCode.LA;
+import static code.OpCode.LI;
+import static code.OpCode.LD;
+import static code.OpCode.MFHI;
+import static code.OpCode.MFLO;
+import static code.OpCode.MOVE;
 import static code.OpCode.ASCII;
 import static code.OpCode.WORD;
+import static code.OpCode.DOUBLE;
+import static code.OpCode.SYSCALL;
 
 import static typing.Type.LOGICAL_TYPE;
 import static typing.Type.INTEGER_TYPE;
@@ -27,7 +44,8 @@ import typing.Type;
 public final class CodeGen extends ASTBaseVisitor<String> {
 
 	private final Instruction code[]; // user program code
-    private final Instruction pointer[]; // pointers
+    private final Instruction text[]; // code section
+    private final Instruction data[]; // data section
 
 	private final StrTable st;
 	private final VarTable vt;
@@ -35,15 +53,18 @@ public final class CodeGen extends ASTBaseVisitor<String> {
 	// Contadores para geração de código.
 	// Próxima posição na memória de código para emit.
 	private static int nextInstr;
-    private static int nextPointer;
+    private static int nextText;
+    private static int nextData;
 	// Número de registradores temporários já utilizados.
 	private static int valueRegsCount;
 	private static int argRegsCount;
     private static int tempRegsCount;
+    private static int floatRegsCount;
 	
 	public CodeGen(StrTable st, VarTable vt) {
 		this.code = new Instruction[INSTR_MEM_SIZE];
-        this.pointer = new Instruction[INSTR_MEM_SIZE];
+        this.text = new Instruction[INSTR_MEM_SIZE];
+        this.data = new Instruction[INSTR_MEM_SIZE];
 		this.st = st;
 		this.vt = vt;
 	}
@@ -52,10 +73,12 @@ public final class CodeGen extends ASTBaseVisitor<String> {
 	@Override
 	public void execute(AST root) {
 		nextInstr = 0;
-        nextPointer = 0;
+        nextText = 0;
+        nextData = 0;
 		valueRegsCount = 0;
 		argRegsCount = 0;
         tempRegsCount = 0;
+        floatRegsCount = 0;
 	    visit(root);
         dumpProgram();
 	}
@@ -66,19 +89,21 @@ public final class CodeGen extends ASTBaseVisitor<String> {
             PrintWriter writer = new PrintWriter(filename, "UTF-8");
 
             writer.println("# " + filename + " in MIPS assembly");
-            writer.println("\t\t" + ".text");
+            writer.println(".data");
+            for (int addr = 0; addr < nextData; addr++) {
+                writer.println(String.format("\tpt_%d:\t%s", addr, data[addr].toString()));
+            }
             writer.println();
-            writer.println("\t\t" + ".globl main");
+            writer.println(".text");
+            for (int addr = 0; addr < nextText; addr++) {
+                writer.println(String.format("\t%s", text[addr].toString()));
+            }
+            writer.println();
+            writer.println(".globl main");
             writer.println();
             writer.println("main:");
             for (int addr = 0; addr < nextInstr; addr++) {
-                writer.println(String.format("\t\t%s", code[addr].toString()));
-            }
-            writer.println();
-            writer.println("\t\t" + ".data");
-            writer.println();
-            for (int addr = 0; addr < nextPointer; addr++) {
-                writer.println(String.format("pt_%d:\t%s", addr, pointer[addr].toString()));
+                writer.println(String.format("\t%s", code[addr].toString()));
             }
 
             writer.close();
@@ -94,20 +119,33 @@ public final class CodeGen extends ASTBaseVisitor<String> {
         return Integer.toString(x);
     }
 
+    private String str(Double x) {
+        return Double.toString(x);
+    }
+
 
 	// ----------------------------------------------------------------------------
 	// Prints ---------------------------------------------------------------------
 
 	void dumpProgram() {
         System.out.println("\ndumping Program...");
-	    for (int addr = 0; addr < nextInstr; addr++) {
-	    	System.out.printf("%s\n", code[addr].toString());
-	    }
+        System.out.println(".data");
+        for (int addr = 0; addr < nextData; addr++) {
+            System.out.println(String.format("\tpt_%d:\t%s", addr, data[addr].toString()));
+        }
         System.out.println();
-        for (int addr = 0; addr < nextPointer; addr++) {
-	    	System.out.printf("pt_%d: %s\n", addr, pointer[addr].toString());
-	    }
-	}
+        System.out.println(".text");
+        for (int addr = 0; addr < nextText; addr++) {
+            System.out.println(String.format("\t%s", text[addr].toString()));
+        }
+        System.out.println();
+        System.out.println(".globl main");
+        System.out.println();
+        System.out.println("main:");
+        for (int addr = 0; addr < nextInstr; addr++) {
+            System.out.println(String.format("\t%s", code[addr].toString()));
+        }
+    }
 
 	// ----------------------------------------------------------------------------
 	// Emits ----------------------------------------------------------------------
@@ -132,30 +170,52 @@ public final class CodeGen extends ASTBaseVisitor<String> {
     }
 
     // ----------------------------------------------------------------------------
-	// Pointers -------------------------------------------------------------------
+	// Text -----------------------------------------------------------------------
 	
-	private int pointer(OpCode op, String o1, String o2, String o3) {
+	private void text(OpCode op, String o1, String o2, String o3) {
 		Instruction instr = new Instruction(op, o1, o2, o3);
 		// Em um código para o produção deveria haver uma verificação aqui...
-	    pointer[nextPointer] = instr;
-	    nextPointer++;
-        return nextPointer-1;
+	    text[nextText] = instr;
+	    nextText++;
 	}
 
-	private int pointer(OpCode op) {
-		return pointer(op, null, null, null);
+	private void text(OpCode op) {
+		text(op, null, null, null);
 	}
 
-	private int pointer(OpCode op, String o1) {
-		return pointer(op, o1, null, null);
+	private void text(OpCode op, String o1) {
+		text(op, o1, null, null);
 	}
 
-	private int pointer(OpCode op, String o1, String o2) {
-		return pointer(op, o1, o2, null);
+	private void text(OpCode op, String o1, String o2) {
+		text(op, o1, o2, null);
 	}
 
     // ----------------------------------------------------------------------------
-	// Registers ____--------------------------------------------------------------
+	// Data -----------------------------------------------------------------------
+	
+	private int data(OpCode op, String o1, String o2, String o3) {
+		Instruction instr = new Instruction(op, o1, o2, o3);
+		// Em um código para o produção deveria haver uma verificação aqui...
+	    data[nextData] = instr;
+	    nextData++;
+        return nextData-1;
+	}
+
+	private int data(OpCode op) {
+		return data(op, null, null, null);
+	}
+
+	private int data(OpCode op, String o1) {
+		return data(op, o1, null, null);
+	}
+
+	private int data(OpCode op, String o1, String o2) {
+		return data(op, o1, o2, null);
+	}
+
+    // ----------------------------------------------------------------------------
+	// Registers ------------------------------------------------------------------
 	
 	private String newValueReg() { // (values) from expression evaluation and function results
         String s = String.format("$v%d", valueRegsCount);
@@ -177,6 +237,12 @@ public final class CodeGen extends ASTBaseVisitor<String> {
     private String newTempReg() { // Temporary variables
         String s = String.format("$t%d", tempRegsCount);
 		tempRegsCount++;
+        return s;
+	}
+
+    private String newFloatReg() { // Float variables
+        String s = String.format("$f%d", floatRegsCount);
+		floatRegsCount=floatRegsCount+2;
         return s;
 	}
 
@@ -276,29 +342,96 @@ public final class CodeGen extends ASTBaseVisitor<String> {
 	    String y = visit(node.getChild(0));
 	    String z = visit(node.getChild(1));
 
-
-	    x = newTempReg();
-	    emit(ADD, x, y, z);
-
-        int pt = pointer(WORD, "0");
-        emit(SW, x, String.format("pt_%d", pt));
+        if (node.getChild(0).type == INTEGER_TYPE) {
+            x = newTempReg();
+            emit(ADD, x, y, z);
+            int pt = data(WORD, "0");
+            emit(SW, x, String.format("pt_%d", pt));
+        }
+	    else if (node.getChild(0).type == DOUBLE_TYPE) {
+            x = newFloatReg();
+            emit(ADDD, x, y, z);
+            int pt = data(WORD, "0");
+            emit(SD, x, String.format("pt_%d", pt));
+        }
 
 	    return x;
     }
 
     @Override
 	protected String visitMinus(AST node) {
-        return null;
+        String x = null;
+	    String y = visit(node.getChild(0));
+	    String z = visit(node.getChild(1));
+
+        if (node.getChild(0).type == INTEGER_TYPE) {
+            x = newTempReg();
+            emit(SUB, x, y, z);
+            int pt = data(WORD, "0");
+            emit(SW, x, String.format("pt_%d", pt));
+        }
+	    else if (node.getChild(0).type == DOUBLE_TYPE) {
+            x = newFloatReg();
+            emit(SUBD, x, y, z);
+            int pt = data(WORD, "0");
+            emit(SD, x, String.format("pt_%d", pt));
+        }
+
+        return x;
     }
 
     @Override
 	protected String visitTimes(AST node) {
-        return null;
+        String x = null;
+	    String y = visit(node.getChild(0));
+	    String z = visit(node.getChild(1));
+
+        if (node.getChild(0).type == INTEGER_TYPE) {
+            x = newTempReg();
+            emit(MUL, y, z);
+            int pt = data(WORD, "0");
+            emit(SW, x, String.format("pt_%d", pt));
+
+            String hi = newTempReg();
+            String lo = newTempReg();
+            emit(MFHI, hi);
+            emit(MFLO, lo);
+        }
+	    else if (node.getChild(0).type == DOUBLE_TYPE) {
+            x = newFloatReg();
+            emit(MULD, x, y, z);
+            int pt = data(WORD, "0");
+            emit(SD, x, String.format("pt_%d", pt));
+        }
+
+        return x;
     }
 
     @Override
 	protected String visitOver(AST node) {
-        return null;
+        String x = null;
+	    String y = visit(node.getChild(0));
+	    String z = visit(node.getChild(1));
+
+        if (node.getChild(0).type == INTEGER_TYPE) {
+            x = newTempReg();
+            emit(DIV, y, z);
+            int pt = data(WORD, "0");
+            //emit(SW, x, String.format("pt_%d", pt));
+
+            String hi = newTempReg();
+            String lo = newTempReg();
+            emit(MFHI, hi);
+            emit(MFLO, lo);
+        }
+	    else if (node.getChild(0).type == DOUBLE_TYPE) {
+            x = newFloatReg();
+            emit(DIVD, x, y, z);
+            int pt = data(WORD, "0");
+            emit(SD, x, String.format("pt_%d", pt));
+        }
+
+        return x;
     }
 
     @Override
@@ -430,7 +563,14 @@ public final class CodeGen extends ASTBaseVisitor<String> {
 
     @Override
     protected String visitDouble(AST node) {
-        return null;
+        System.out.println("Double");
+
+        Double c = node.doubleData;
+        int pt = data(DOUBLE, str(c));
+        String x = newFloatReg();
+	    text(LD, x, String.format("pt_%d", pt));
+
+	    return x;
     }
 
     @Override
@@ -442,7 +582,7 @@ public final class CodeGen extends ASTBaseVisitor<String> {
     protected String visitCharacter(AST node) {
         System.out.println("Character");
 
-        int pt = pointer(ASCII, st.getName(node.intData));
+        int pt = data(ASCII, st.getName(node.intData));
         String x = newArgReg();
 	    emit(LA, x, String.format("pt_%d", pt));
 
