@@ -101,6 +101,12 @@ public enum Type {
 
 	//"S4"	an S4 object which is not a simple object
 
+	ARRAY_TYPE {
+		public String toString() {
+            return "array";
+        }
+	},
+
 	// Indica um erro de tipos.
 	NO_TYPE {
 		public String toString() {
@@ -118,11 +124,17 @@ public enum Type {
 
 	public Unif unifyArithmetic(List<Integer> thats) {
 		Type resultType = this.values()[Collections.max(thats)];
-		System.out.println(resultType);
 		List<Conv> resultConv = new ArrayList<>();
 
 		// Em caso de tipos que não sejam numéricos
 		if((resultType != LOGICAL_TYPE) && (resultType != INTEGER_TYPE) && (resultType != DOUBLE_TYPE)) {
+			for(int that: thats) {
+				resultConv.add(NONE);
+			}
+			return new Unif(resultType, resultConv);
+		}
+
+		if (this == SYMBOL_TYPE) {
 			for(int that: thats) {
 				resultConv.add(NONE);
 			}

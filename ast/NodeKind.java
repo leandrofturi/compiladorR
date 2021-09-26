@@ -62,14 +62,29 @@ public enum NodeKind {
             return "==";
         }
 	},
+	NEQ_NODE {
+		public String toString() {
+            return "!=";
+        }
+	},
 	LT_NODE {
 		public String toString() {
             return "<";
         }
 	},
+	LET_NODE {
+		public String toString() {
+            return "<=";
+        }
+	},
 	GT_NODE {
 		public String toString() {
             return ">";
+        }
+	},
+	GET_NODE {
+		public String toString() {
+            return ">=";
         }
 	},
 	PLUS_NODE {

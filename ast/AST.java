@@ -15,11 +15,11 @@ public class AST {
 	// Note que não há union em Java, então aquele truque de ler
 	// e/ou escrever o campo com formatos diferentes não funciona aqui.
 	// Os campos 'data' NÃO ficam sincronizados!
-	public  final NodeKind kind;
-	public  final int intData;
-	public  final double doubleData;
-	public  final Type type;
-	public 	final List<AST> children;
+	public NodeKind kind;
+	public int intData;
+	public double doubleData;
+	public Type type;
+	public List<AST> children;
 
 	// Construtor completo para poder tornar todos os campos finais.
 	// Privado porque não queremos os dois campos 'data' preenchidos ao mesmo tempo.

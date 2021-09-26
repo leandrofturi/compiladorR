@@ -2,17 +2,30 @@ package code;
 
 import java.util.Formatter;
 
+import static code.OpCode.LW3;
+import static code.OpCode.SW3;
+
 // Instruction quadruple.
 public final class Instruction {
 
 	// Público para não precisar de getter/setter.
 	public final OpCode op;
 	// Estes campos não podem ser final por causa do backpatching...
+	public String label;
 	public String o1;
 	public String o2;
 	public String o3;
 
 	public Instruction(OpCode op, String o1, String o2, String o3) {
+		this.label = null;
+		this.op = op;
+		this.o1 = o1;
+		this.o2 = o2;
+		this.o3 = o3;
+	}
+
+	public Instruction(String label, OpCode op, String o1, String o2, String o3) {
+		this.label = label;
 		this.op = op;
 		this.o1 = o1;
 		this.o2 = o2;
@@ -22,13 +35,30 @@ public final class Instruction {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		Formatter f = new Formatter(sb);
-		f.format("%s", this.op.toString());
-		if (this.op.opCount == 1) {
-			f.format(" %s", this.o1);
-		} else if (this.op.opCount == 2) {
-			f.format(" %s, %s", this.o1, this.o2);
-		} else if (this.op.opCount == 3) {
-			f.format(" %s, %s, %s", this.o1, this.o2, this.o3);
+		if ((this.op == LW3) || (this.op == SW3)) {
+			if (this.label != null) {
+				f.format("%s: ", this.label);
+			}
+			f.format("%s", this.op.toString());
+			if (this.op.opCount == 1) {
+				f.format(" %s", this.o1);
+			} else if (this.op.opCount == 2) {
+				f.format(" %s, %s", this.o1, this.o2);
+			} else if (this.op.opCount == 3) {
+				f.format(" %s, %s(%s)", this.o1, this.o2, this.o3);
+			}
+		} else {
+			if (this.label != null) {
+				f.format("%s: ", this.label);
+			}
+			f.format("%s", this.op.toString());
+			if (this.op.opCount == 1) {
+				f.format(" %s", this.o1);
+			} else if (this.op.opCount == 2) {
+				f.format(" %s, %s", this.o1, this.o2);
+			} else if (this.op.opCount == 3) {
+				f.format(" %s, %s, %s", this.o1, this.o2, this.o3);
+			}
 		}
 		f.close();
 		return sb.toString();

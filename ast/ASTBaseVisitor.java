@@ -22,8 +22,11 @@ public abstract class ASTBaseVisitor<T> {
             case NAMESPACE_NODE:            return visitNamespace(node);
             case WRAPPEDIN_NODE:            return visitWrappedin(node);
             case EQ_NODE:                   return visitEq(node);
+            case NEQ_NODE:                  return visitNeq(node);
             case LT_NODE:                   return visitLt(node);
+            case LET_NODE:                  return visitLet(node);
             case GT_NODE:                   return visitGt(node);
+            case GET_NODE:                  return visitGet(node);
             case PLUS_NODE:                 return visitPlus(node);
             case MINUS_NODE:                return visitMinus(node);
             case TIMES_NODE:                return visitTimes(node);
@@ -105,9 +108,15 @@ public abstract class ASTBaseVisitor<T> {
 
 	protected abstract T visitEq(AST node);
 
+    protected abstract T visitNeq(AST node);
+
 	protected abstract T visitLt(AST node);
 
+    protected abstract T visitLet(AST node);
+
 	protected abstract T visitGt(AST node);
+
+    protected abstract T visitGet(AST node);
 
 	protected abstract T visitPlus(AST node);
 

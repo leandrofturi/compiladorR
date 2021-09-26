@@ -21,6 +21,7 @@ import static typing.Type.CHARACTER_TYPE;
 import static typing.Type.LIST_TYPE;
 import static typing.Type.SYMBOL_TYPE;
 import static typing.Type.CLOSURE_TYPE;
+import static typing.Type.ARRAY_TYPE;
 import static typing.Type.NO_TYPE;
 
 import typing.Conv;
@@ -41,8 +42,11 @@ import static ast.NodeKind.SIGN_NODE;
 import static ast.NodeKind.NAMESPACE_NODE;
 import static ast.NodeKind.WRAPPEDIN_NODE;
 import static ast.NodeKind.EQ_NODE;
+import static ast.NodeKind.NEQ_NODE;
 import static ast.NodeKind.LT_NODE;
+import static ast.NodeKind.LET_NODE;
 import static ast.NodeKind.GT_NODE;
+import static ast.NodeKind.GET_NODE;
 import static ast.NodeKind.PLUS_NODE;
 import static ast.NodeKind.MINUS_NODE;
 import static ast.NodeKind.TIMES_NODE;
@@ -385,7 +389,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		// Faz a unificação dos tipos para determinar o tipo resultante.
 		Type lt = l.type;
 		Type rt = r.type;
-		Unif unif = lt.unifyLogic(rt);
+		Unif unif = lt.unifyArithmetic(rt);
 
 		if (unif.type == NO_TYPE) {
 			typeError(ctx.op.getLine(), ctx.op.getText(), lt, rt);
@@ -396,12 +400,20 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 		r = Conv.createConvNode(unif.c.get(1), r);
 
 		// Olha qual é o operador e cria o nó correspondente na AST.
-		if (ctx.op.getText().equals("+")) {
+		if (ctx.op.getText().equals("==")) {
 			return AST.newSubtree(EQ_NODE, unif.type, l, r);
+		} else if (ctx.op.getText().equals("!=")) {
+			return AST.newSubtree(NEQ_NODE, unif.type, l, r);
 		} else if (ctx.op.getText().equals("<")) {
 			return AST.newSubtree(LT_NODE, unif.type, l, r);
-		} else {
+		} else if (ctx.op.getText().equals("<=")) {
+			return AST.newSubtree(LET_NODE, unif.type, l, r);
+		} else if (ctx.op.getText().equals(">")) {
 			return AST.newSubtree(GT_NODE, unif.type, l, r);
+		} else if (ctx.op.getText().equals(">=")) {
+			return AST.newSubtree(GET_NODE, unif.type, l, r);
+		} else {
+			return AST.newSubtree(EMPTY_NODE, unif.type, l, r);
 		}
 	}
 
@@ -544,7 +556,7 @@ public class SemanticChecker extends RBaseVisitor<AST> {
 			}
 
 			// Olha qual é o operador e cria o nó correspondente na AST.
-			return AST.newSubtree(nodeResult, NO_TYPE, fun, values);
+			return AST.newSubtree(nodeResult, ARRAY_TYPE, values);
 		} else if((values.getChildSize() > 0) && ass.equals("list")) {
 			// Atualiza o tipo da variável
 			if(var != null) {
