@@ -1,6 +1,6 @@
 # Compilador de Linguagem R 
 
-Leandro Furlam e Isuflânia Ribeiro
+Leandro Furlam e Isauflânia Ribeiro
 
 ## Árvore de Sintaxe Abstrata (AST)
 
